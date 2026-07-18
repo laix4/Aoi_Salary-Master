@@ -97,7 +97,10 @@
 
         h3 { color: rgb(80, 60, 110); margin-top: 0; font-size: 20px; }
         
-        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px; }
+        /* 修改版面配置：左右分欄，並加上 align-items: start 防止拉伸 */
+        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px; align-items: start; }
+        .left-col { display: flex; flex-direction: column; gap: 20px; }
+        .right-col { display: flex; flex-direction: column; gap: 20px; }
         
         .card { 
             background: var(--secondary-color); padding: 20px; 
@@ -114,12 +117,12 @@
         .toggle-icon { font-size: 16px; color: var(--primary-color); transition: transform 0.3s ease; }
         .collapsible-content { margin-top: 15px; }
 
-        .form-group { margin-bottom: 18px; }
+        .form-group { margin-bottom: 18px; width: 100%; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 16px; color: #444;}
         
         .form-group input[type="number"], .form-group input[type="date"], .form-group select { 
             width: 100%; padding: 14px 12px; border: 1px solid var(--border-color); 
-            border-radius: 8px; font-size: 18px; background: #fff; min-width: 0;
+            border-radius: 8px; font-size: 18px; background: #fff; min-width: 0; box-sizing: border-box;
         }
         .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-light); }
         
@@ -137,17 +140,17 @@
         .rate-grid .form-group { margin-bottom: 0; }
         .rate-grid label { font-size: 14px; color: #555; }
         
+        /* 智慧網格設計：自動依照數量排版 (5格或6格) */
         .summary-dashboard { 
             background: var(--dashboard-bg); color: white; border-radius: 10px; padding: 25px; 
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
             transition: all 0.3s ease;
         }
-        .summary-dashboard.has-night { grid-template-columns: repeat(5, 1fr); }
         .dashboard-item { background: rgba(255,255,255,0.1); padding: 20px 15px; border-radius: 8px; text-align: center; }
-        .dashboard-item .title { font-size: 16px; color: #dcdfe6; margin-bottom: 8px; }
-        .dashboard-item .value { font-size: 24px; font-weight: bold; }
+        .dashboard-item .title { font-size: 15px; color: #dcdfe6; margin-bottom: 8px; }
+        .dashboard-item .value { font-size: 22px; font-weight: bold; }
         .dashboard-item.final { background: var(--primary-color); border: 2px solid rgba(255,255,255,0.3); grid-column: 1 / -1; }
-        .dashboard-item.final .value { font-size: 32px; color: #fff; }
+        .dashboard-item.final .value { font-size: 30px; color: #fff; }
         .dashboard-item .val-plus { color: #2ecc71; }
         .dashboard-item .val-minus { color: #ff7675; }
 
@@ -204,8 +207,8 @@
         .calendar-cell.edit-mode-on { cursor: pointer; border: 1.5px dashed var(--danger-color); }
         .calendar-cell.edit-mode-on:hover { background-color: #fff3e0; }
         
-        /* 非計算週期 (26日~月底) 透明度淡化處理，只針對內部元素，不影響格子邊框與背景 */
-        .next-cycle-cell > * { opacity: 0.4; }
+        /* 非計算週期透明度 (30% 不透明 = 70% 透明)，只針對子元素不影響網格線 */
+        .next-cycle-cell > * { opacity: 0.3; }
 
         .day-header-wrapper { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
         .calendar-date { font-size: 13px; color: #777; font-weight: bold; }
@@ -232,6 +235,10 @@
         .disclaimer-box { margin-top: 25px; font-size: 13px; color: #7f8c8d; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee; line-height: 1.6;}
         .disclaimer-box strong { color: #e74c3c; font-size: 14px;}
 
+        @media (max-width: 1024px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
         @media (max-width: 768px) {
             body { padding: 8px; font-size: 16px; }
             .container { padding: 15px; overflow-x: hidden; width: 100%; border-radius: 10px;}
@@ -242,7 +249,6 @@
             .header-status-row { flex-direction: column; align-items: flex-start; gap: 12px; }
             .header-status-row .right-tags { width: 100%; justify-content: space-between; }
             
-            .grid-layout { grid-template-columns: 1fr; gap: 15px; }
             .card { padding: 15px; }
             
             .dynamic-row { flex-wrap: wrap; background: rgba(94, 72, 132, 0.04); padding: 12px; border-radius: 8px; border: 1px solid #eaeaea; gap: 12px; }
@@ -254,15 +260,16 @@
             .form-group label { font-size: 16px; }
             .rate-grid label { font-size: 14px; }
             
+            /* 手機版打卡區塊防破版修正 */
             #dailyInputGrid { grid-template-columns: 1fr !important; gap: 15px; }
+            #dailyInputGrid .form-group input { max-width: 100%; }
+
             .filter-box { padding: 20px 15px; }
             .filter-controls { flex-direction: column; align-items: stretch; gap: 15px; margin-top: 15px;}
             .filter-box select { width: 100% !important; margin-left: 0 !important; }
             .top-quick-summary { align-items: center; padding: 15px; }
             
             .summary-dashboard { grid-template-columns: repeat(2, 1fr); padding: 20px 15px; }
-            .summary-dashboard.has-night { grid-template-columns: repeat(2, 1fr); }
-            .summary-dashboard.has-night #dashNightItem { grid-column: span 2; }
             
             .cloud-section { flex-direction: column; align-items: stretch; padding: 15px; }
             .cloud-section > div { width: 100%; display: flex; flex-direction: column; gap: 12px; }
@@ -316,10 +323,10 @@
         <div id="currentPeriodRange" style="font-size: 15px; color: #7f8c8d; margin-top: 12px; font-weight: bold;"></div>
     </div>
     
-    <div class="grid-layout">
-        <!-- 左側：薪資結構與夜班設定 -->
-        <div>
-            <div class="card" style="margin-bottom: 20px;">
+    <div class="main-layout">
+        <!-- 左欄：薪資結構、固定扣款、加班倍率 -->
+        <div class="left-col">
+            <div class="card" style="margin-bottom: 0;">
                 <div class="collapsible-header" onclick="toggleSection('sec1-content', 'sec1-icon')">
                     <h3 data-i18n="sec1_title">1. 該月薪資結構</h3>
                     <span id="sec1-icon" class="toggle-icon">▼</span>
@@ -335,7 +342,6 @@
                         </label>
                     </div>
 
-                    <!-- 班別設定 -->
                     <div class="form-group">
                         <label data-i18n="shift_label">輪班班別設定</label>
                         <select id="shiftType" onchange="onConfigInputChange()">
@@ -381,7 +387,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" style="margin-bottom: 0;">
                 <div class="collapsible-header" onclick="toggleSection('sec2-content', 'sec2-icon')">
                     <h3 data-i18n="sec2_title">2. 該月固定扣除項目</h3>
                     <span id="sec2-icon" class="toggle-icon">▼</span>
@@ -391,11 +397,8 @@
                     <button class="btn-add" style="margin-top: 15px;" onclick="addDeductionItemUI('', 0, false); onConfigInputChange();" data-i18n="add_deduction">➕ 新增其他扣除項目</button>
                 </div>
             </div>
-        </div>
 
-        <!-- 右側：倍率設定與日常紀錄 -->
-        <div>
-            <div class="card" style="margin-bottom: 20px;">
+            <div class="card" style="margin-bottom: 0;">
                 <div class="collapsible-header" onclick="toggleSection('sec3-content', 'sec3-icon')">
                     <h3 data-i18n="sec3_title">3. 系統加班費倍率設定</h3>
                     <span id="sec3-icon" class="toggle-icon">▼</span>
@@ -411,8 +414,11 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="card">
+        <!-- 右欄：打卡申報 -->
+        <div class="right-col">
+            <div class="card" style="margin-bottom: 0;">
                 <h3 data-i18n="sec4_title">4. 每日加班 / 請假申報</h3>
                 <div class="form-group">
                     <div class="radio-group">
@@ -421,7 +427,7 @@
                     </div>
                 </div>
                 <div class="rate-grid" id="dailyInputGrid" style="grid-template-columns: 1fr 1fr 1fr;">
-                    <div class="form-group"><label data-i18n="date">日期</label><input type="date" id="recordDate" onchange="onDateChange()"></div>
+                    <div class="form-group"><label data-i18n="date">日期 (出勤日)</label><input type="date" id="recordDate" onchange="onDateChange()"></div>
                     <div class="form-group"><label id="subTypeLabel" data-i18n="type">類型</label><select id="recordSubType" onchange="updateDefaultHours()"></select></div>
                     <div class="form-group"><label id="hoursLabel" data-i18n="ext_ot_hours">延長加班時數</label><input type="number" id="recordHours" value="0" step="0.5" min="0"></div>
                 </div>
@@ -431,14 +437,14 @@
         </div>
     </div>
 
-    <!-- 總結算儀表板 4+1 -->
+    <!-- 總結算儀表板 智慧排列 (5格或6格) -->
     <div class="summary-dashboard" id="summaryDashboard">
         <div class="dashboard-item"><div class="title" data-i18n="dash_base">當月核定總底薪 (A)</div><div class="value" id="dashBase">0</div></div>
         <div class="dashboard-item"><div class="title" data-i18n="dash_ot">應發加班費 (B)</div><div class="value val-plus" id="dashOT">+$ 0</div></div>
         <div class="dashboard-item"><div class="title" data-i18n="dash_leave">請假扣薪 (C)</div><div class="value val-minus" id="dashLeave">-$ 0</div></div>
         <div class="dashboard-item"><div class="title" data-i18n="dash_deduct">固定扣款 (D)</div><div class="value val-minus" id="dashDeduct">-$ 0</div></div>
         
-        <!-- 夜班出勤津貼獨立大格 (E) -->
+        <!-- 夜班出勤津貼 (E) 回歸標準卡片設計 -->
         <div class="dashboard-item" id="dashNightItem" style="display: none;">
             <div class="title" id="dashNightTitle">夜班出勤津貼 (E)</div>
             <div class="value val-plus" id="dashNightAllow">+$ 0</div>
@@ -467,7 +473,7 @@
         <table>
             <thead>
                 <tr id="tableHeaderRow">
-                    <th class="desktop-only" data-i18n="th_date">日期</th>
+                    <th class="desktop-only" data-i18n="th_date">出勤日期</th>
                     <th class="desktop-only" data-i18n="th_month">歸屬發薪月</th>
                     <th class="desktop-only" data-i18n="th_category">類別</th>
                     <th class="desktop-only" data-i18n="th_subtype">細項類型</th>
@@ -518,13 +524,13 @@
             'month_format': (y, m) => `${y} 年 ${m} 月份結算`, 'period_range': (y1, m1, y2, m2) => `📅 區間：${y1}-${m1}-26 至 ${y2}-${m2}-25`,
             'apply_to': (m) => `套用於：${m} 結算`, 'sec1_title': '1. 該月薪資結構', 'sec1_desc': '若不修改，將自動沿用上個月的設定檔。',
             'base_salary': '本薪 (元)', 'night_allowance_label': '夜班津貼 (元/班)', 'allowance_label': '該月各項津貼 (加總計算時薪)', 'add_allowance': '➕ 新增津貼項目', 'allowance_ph': '津貼名稱(如:全勤)',
-            'total_base': '核定總底薪 (本薪+津貼)：', 'hourly_rate_day': '日班時薪 (總底薪/240)：', 'hourly_rate_night': '夜班時薪 (+夜班津貼/8)：',
+            'total_base': '核定總底薪 (本薪+津貼)：', 'hourly_rate_day': '時薪 (總底薪/240)：', 'hourly_rate_night': '夜班時薪 (+夜班津貼/8)：',
             'sec2_title': '2. 該月固定扣除項目', 'add_deduction': '➕ 新增其他扣除項目', 'deduction_ph': '扣款名稱',
             'sec3_title': '3. 系統加班費倍率設定', 'wd1': '工作日(前2hr)', 'wd2': '工作日(後2hr)', 'rst1': '休假日(前2hr)', 'rst2': '休假日(3-8hr)', 'rst3': '休假日(9-12hr)', 'hol': '例/國/颱假日倍率',
-            'sec4_title': '4. 每日加班 / 請假申報', 'type_ot': '➕ 加班', 'type_leave': '➖ 請假', 'date': '日期', 'type': '類型', 'hours': '時數', 'ext_ot_hours': '延長加班時數', 'leave_hours': '請假時數', 'is_night_shift': '🌙 啟用夜班津貼模式', 'btn_add_record': '⬇️ 新增 / 更新此筆紀錄',
-            'dash_base': '當月核定總底薪 (A)', 'dash_ot': '應發加班費 (B)', 'dash_leave': '請假扣薪 (C)', 'dash_deduct': '固定扣款 (D)', 'dash_final_off': '本月實領預估 (A+B-C-D)', 'dash_final_on': '本月實領預估 (A+B-C-D+E)', 'dash_night_allow_prefix': '夜班出勤津貼 (E) - 出勤', 'dash_night_allow_suffix': '天',
+            'sec4_title': '4. 每日加班 / 請假申報', 'type_ot': '➕ 加班', 'type_leave': '➖ 請假', 'date': '日期 (出勤日)', 'type': '類型', 'hours': '時數', 'ext_ot_hours': '延長加班時數', 'leave_hours': '請假時數', 'is_night_shift': '🌙 啟用夜班津貼模式', 'btn_add_record': '⬇️ 新增 / 更新此筆紀錄',
+            'dash_base': '當月核定總底薪 (A)', 'dash_ot': '應發加班費 (B)', 'dash_leave': '請假扣薪 (C)', 'dash_deduct': '固定扣款 (D)', 'dash_final_off': '本月實領預估 (A+B-C-D)', 'dash_final_on': '本月實領預估 (A+B+E-C-D)', 'dash_night_allow_prefix': '夜班出勤津貼 (E) - 出勤', 'dash_night_allow_suffix': '天',
             'table_title': '當月出勤異動明細', 'cal_edit_mode': '✏️ 開啟調休編輯模式', 'shift_label': '輪班班別設定',
-            'th_date': '日期', 'th_month': '歸屬發薪月', 'th_category': '類別', 'th_subtype': '細項類型', 'th_hours': '時數', 'th_mobile_date': '日期', 'th_mobile_detail': '明細', 'th_amount': '影響金額', 'th_action': '操作',
+            'th_date': '出勤日期', 'th_month': '歸屬發薪月', 'th_category': '類別', 'th_subtype': '細項類型', 'th_hours': '時數', 'th_mobile_date': '日期', 'th_mobile_detail': '明細', 'th_amount': '影響金額', 'th_action': '操作',
             'cloud_title': '☁️ 跨裝置/雲端同步', 'cloud_desc': '在電腦建立好的資料，請點「匯出備份」。到手機開啟此網頁時，點「匯入備份」就能無縫接軌！',
             'btn_export': '📤 匯出備份檔 (.json)', 'btn_import': '📥 匯入雲端備份', 'btn_clear': '🗑️ 清除當前設備的所有紀錄 (恢復原廠狀態)',
             'disc_title': '⚠️ 免責聲明', 'disc_content': '本 APP所預估的薪資、加班費及相關金額僅供參考，實際薪資、津貼、獎金及各項給付內容，仍以公司實際核發金額及相關規定為準。',
@@ -533,7 +539,7 @@
             'sub_pl': '事假 (扣全薪)', 'sub_sl': '病假 (扣半薪)', 'sub_ml': '生理假 (扣半薪)', 'sub_al': '特休 (不扣薪)',
             'def_d1': '勞保費', 'def_d2': '健保費', 'def_d3': '眷保費', 'def_d4': '餐費扣抵', 'badge_ot': '➕ 加班', 'badge_leave': '➖ 請假', 'unit_yuan': '元',
             'sun': '日', 'mon': '一', 'tue': '二', 'wed': '三', 'thu': '四', 'fri': '五', 'sat': '六',
-            'badge_rest': '休', 'badge_regular': '例', 'badge_national': '國', 'badge_typhoon': '颱', 'auto_detect': '系統自動判定', 'cal_separator': '加班結算截止日為當月25號'
+            'badge_rest': '休', 'badge_regular': '例', 'badge_national': '國', 'badge_typhoon': '颱', 'auto_detect': '系統自動判定'
         },
         'vi': {
             'sys_title': '💰 Tính Lương & Làm Thêm Giờ', 'status_tag': 'Tháng Độc Lập / Đồng Bộ', 'lang_btn': '🌐 中文版',
@@ -556,7 +562,7 @@
             'sub_pl': 'Việc riêng (-100%)', 'sub_sl': 'Ốm (-50%)', 'sub_ml': 'Sinh lý (-50%)', 'sub_al': 'Phép năm (Không trừ)',
             'def_d1': 'Bảo hiểm LĐ', 'def_d2': 'Bảo hiểm YT', 'def_d3': 'Bảo hiểm NPT', 'def_d4': 'Khấu trừ tiền ăn', 'badge_ot': '➕ Tăng ca', 'badge_leave': '➖ Phép', 'unit_yuan': 'VND',
             'sun': 'CN', 'mon': 'T2', 'tue': 'T3', 'wed': 'T4', 'thu': 'T5', 'fri': 'T6', 'sat': 'T7',
-            'badge_rest': 'N', 'badge_regular': 'L', 'badge_national': 'Q', 'badge_typhoon': 'Bão', 'auto_detect': 'Tự động', 'cal_separator': 'Chốt ca làm thêm ngày 25'
+            'badge_rest': 'N', 'badge_regular': 'L', 'badge_national': 'Q', 'badge_typhoon': 'Bão', 'auto_detect': 'Tự động'
         }
     };
 
@@ -712,6 +718,7 @@
                 }
                 if (data.records) {
                     records = data.records.map(r => {
+                        // 強制同步：所有紀錄不論假別或加班，全部以 26~25 週期歸入 salaryMonth
                         r.salaryMonth = getSalaryMonth(r.date);
                         return r;
                     });
@@ -942,6 +949,7 @@
             else if (dt === 'nationalHoliday') subTypeSelect.value = '國定假日';
             else if (dt === 'typhoon') subTypeSelect.value = '颱風假';
             else subTypeSelect.value = '工作日';
+            updateDefaultHours();
         }
     }
 
@@ -1009,30 +1017,28 @@
             const sMonth = getSalaryMonth(dateStr);
             records.push({ id: Date.now(), date: dateStr, salaryMonth: sMonth, mainType: '請假', subType: subType, hours: inputHours });
         } else {
+            if (inputHours < 0) { alert(t('alert_fill')); return; }
+            if (inputHours === 0 && !(isNightMode && subType === '颱風假')) {
+                alert(t('alert_fill')); return; 
+            }
+
             const sMonth = getSalaryMonth(dateStr);
-            let d1 = dateStr;
-            let d2 = getNextDate(dateStr);
-            let dt1 = resolveDayType(d1);
-            let dt2 = resolveDayType(d2);
-
-            let day1Hours = 0;
-            let day2Hours = 0;
-
-            if (isNightMode) {
-                if (dt1 !== 'workday') day1Hours += 3.5;
-                if (dt2 !== 'workday') day2Hours += 4.5;
-                day2Hours += inputHours; 
-            } else {
-                if (dt1 !== 'workday') day1Hours += 8;
-                day1Hours += inputHours; 
-            }
-
             let nowId = Date.now();
-            if (day1Hours > 0) {
-                records.push({ id: nowId, date: d1, salaryMonth: sMonth, mainType: '加班', subType: mapDtToName(dt1), hours: day1Hours });
+            
+            if (subType !== "颱風假") {
+                const dt = resolveDayType(dateStr);
+                if (dt === 'restday') subType = '休假日';
+                else if (dt === 'regularHoliday') subType = '例假日';
+                else if (dt === 'nationalHoliday') subType = '國定假日';
+                else subType = '工作日';
             }
-            if (day2Hours > 0) {
-                records.push({ id: nowId + 1, date: d2, salaryMonth: sMonth, mainType: '加班', subType: mapDtToName(dt2), hours: day2Hours });
+
+            if (isNightMode && subType === '颱風假' && inputHours > 0) {
+                records.push({ id: nowId, date: dateStr, salaryMonth: sMonth, mainType: '加班', subType: '颱風假', hours: 3.5 });
+                records.push({ id: nowId + 1, date: dateStr, salaryMonth: sMonth, mainType: '加班', subType: '工作日', hours: inputHours });
+            } else {
+                let finalHours = (isNightMode && subType === '颱風假' && inputHours === 0) ? 3.5 : inputHours;
+                records.push({ id: nowId, date: dateStr, salaryMonth: sMonth, mainType: '加班', subType: subType, hours: finalHours });
             }
         }
         
@@ -1067,23 +1073,16 @@
             const r_rst3 = parseFloat(document.getElementById('rate_rst3').value) || 2.67;
             const r_hol = parseFloat(document.getElementById('rate_hol').value) || 2.0;
 
-            let effectiveSubType = subType;
-            if (subType !== "颱風假") {
-                const dt = resolveDayType(record.date);
-                if (dt === 'restday') effectiveSubType = '休假日';
-                else if (dt === 'regularHoliday') effectiveSubType = '例假日';
-                else if (dt === 'nationalHoliday') effectiveSubType = '國定假日';
-                else effectiveSubType = '工作日';
-            }
-
-            if (effectiveSubType === "工作日") {
+            if (subType === "平日" || subType === "工作日") {
                 if (hours <= 2) amount = hours * recordHourlyRate * r_wd1;
                 else amount = (2 * recordHourlyRate * r_wd1) + ((hours - 2) * recordHourlyRate * r_wd2);
-            } else if (effectiveSubType === "休假日") {
+            } else if (subType === "休假日" || subType === "休息日") {
                 if (hours <= 2) amount = hours * recordHourlyRate * r_rst1;
                 else if (hours <= 8) amount = (2 * recordHourlyRate * r_rst1) + ((hours - 2) * recordHourlyRate * r_rst2);
                 else amount = (2 * recordHourlyRate * r_rst1) + (6 * recordHourlyRate * r_rst2) + ((hours - 8) * recordHourlyRate * r_rst3);
-            } else { amount = hours * recordHourlyRate * r_hol; }
+            } else { 
+                amount = hours * recordHourlyRate * r_hol; 
+            }
             return Math.round(amount);
         } else {
             if (subType === "事假") amount = hours * baseHourlyRate * 1.0;
@@ -1143,6 +1142,7 @@
 
         const startDate = new Date(prevYear, prevMonth - 1, 26);
         const endDate = new Date(year, month, 0); 
+        const cycleEnd = new Date(year, month - 1, 25);
 
         const recordMap = {};
         allRecords.forEach(r => {
@@ -1178,8 +1178,8 @@
             else if (dt === 'typhoon') badgeHtml = `<span class="dt-badge dt-typhoon">${t('badge_typhoon')}</span>`;
 
             let recordHtml = '';
-            let isNextCycle = currentDate.getDate() >= 26 && currentDate.getMonth() === month - 1;
-            
+            let isNextCycle = currentDate > cycleEnd;
+
             if (!isNextCycle && recordMap[dateStr]) {
                 recordMap[dateStr].forEach(r => {
                     if (r.mainType === "加班") {
@@ -1242,19 +1242,21 @@
         const isNightMode = currentMonthConfig.isNightShiftMode;
         const nightAllowance = currentMonthConfig.nightShiftAllowance !== undefined ? parseFloat(currentMonthConfig.nightShiftAllowance) : 300;
 
+        // 計算夜班出勤天數，綁定 26號到 25號週期
         let attendanceCount = 0;
-        let startD = new Date(pYear, pMonth - 1, 1);
-        let endD = new Date(pYear, pMonth, 0); 
+        let startD = new Date(prevYear, (pMonth === 1 ? 12 : pMonth - 1) - 1, 26);
+        let endD = new Date(pYear, pMonth - 1, 25); 
         
         records.sort((a, b) => new Date(a.date) - new Date(b.date));
         
+        // 過濾當前計薪月份的資料
         const filteredRecords = records.filter(r => r.salaryMonth === selectedMonth);
 
         let currD = new Date(startD);
         while(currD <= endD) {
             let dStr = `${currD.getFullYear()}-${String(currD.getMonth()+1).padStart(2,'0')}-${String(currD.getDate()).padStart(2,'0')}`;
             let dt = resolveDayType(dStr);
-            let dRecs = records.filter(r => r.date === dStr); 
+            let dRecs = filteredRecords.filter(r => r.date === dStr); 
             
             let isWorkday = (dt === 'workday');
             let hasOT = dRecs.some(r => r.mainType === '加班' && r.hours > 0);
