@@ -186,8 +186,6 @@
         .top-quick-summary .sub-row { font-size: 15px; color: #e67e22; display: flex; align-items: baseline; font-weight: bold;}
         .top-quick-summary strong { font-size: 22px; margin-left: 5px; }
         .top-quick-summary .sub-row strong { font-size: 18px; color: #e67e22;}
-        
-        .month-indicator { font-size: 15px; background: #e8eaf6; color: #3f51b5; padding: 6px 12px; border-radius: 6px; display: inline-block; margin-bottom: 12px; font-weight: bold; }
 
         .summary-row {
             display: flex; justify-content: space-between; align-items: center;
@@ -203,6 +201,7 @@
         .calendar-cell { min-height: 75px; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; padding: 5px; display: flex; flex-direction: column; background: #fff; transition: background 0.2s;}
         .calendar-cell:nth-child(7n) { border-right: none; }
         
+        /* 編輯模式樣式 */
         .calendar-cell.edit-mode-on { cursor: pointer; border: 1.5px dashed var(--danger-color); }
         .calendar-cell.edit-mode-on:hover { background-color: #fff3e0; }
 
@@ -318,7 +317,6 @@
         <!-- 左側：薪資結構與夜班設定 -->
         <div>
             <div class="card" style="margin-bottom: 20px;">
-                <div class="month-indicator" id="uiMonthIndicator1">套用於：----</div>
                 <div class="collapsible-header" onclick="toggleSection('sec1-content', 'sec1-icon')">
                     <h3 data-i18n="sec1_title">1. 該月薪資結構</h3>
                     <span id="sec1-icon" class="toggle-icon">▼</span>
@@ -381,7 +379,6 @@
             </div>
 
             <div class="card">
-                <div class="month-indicator" id="uiMonthIndicator2">套用於：----</div>
                 <div class="collapsible-header" onclick="toggleSection('sec2-content', 'sec2-icon')">
                     <h3 data-i18n="sec2_title">2. 該月固定扣除項目</h3>
                     <span id="sec2-icon" class="toggle-icon">▼</span>
@@ -438,7 +435,7 @@
         <div class="dashboard-item"><div class="title" data-i18n="dash_leave">請假扣薪 (C)</div><div class="value val-minus" id="dashLeave">-$ 0</div></div>
         <div class="dashboard-item"><div class="title" data-i18n="dash_deduct">固定扣款 (D)</div><div class="value val-minus" id="dashDeduct">-$ 0</div></div>
         
-        <!-- 夜班出勤津貼獨立大格 (E) - 移除了背景色與 final class，變成標準網格項目 -->
+        <!-- 夜班出勤津貼獨立大格 (E) -->
         <div class="dashboard-item" id="dashNightItem" style="display: none;">
             <div class="title" id="dashNightTitle">夜班出勤津貼 (E)</div>
             <div class="value val-plus" id="dashNightAllow">+$ 0</div>
@@ -712,7 +709,6 @@
                     document.getElementById('rate_hol').value = data.settings.rate_hol || 2.0;
                 }
                 if (data.records) {
-                    // 全面修正回 getSalaryMonth()，使加班與請假同步在 26~25 計算
                     records = data.records.map(r => {
                         r.salaryMonth = getSalaryMonth(r.date);
                         return r;
@@ -722,10 +718,10 @@
                     const todayMonth = getSalaryMonth(new Date().toISOString().split('T')[0]);
                     monthlyConfigs[todayMonth] = {
                         baseSalary: data.settings ? data.settings.baseSalary : 30000,
-                        shiftType: 'A',
-                        customDays: {},
                         isNightShiftMode: false,
                         nightShiftAllowance: 300,
+                        shiftType: 'A',
+                        customDays: {},
                         allowances: data.allowances || [],
                         deductions: data.deductions && data.deductions.length > 0 ? data.deductions : [
                             { name: '勞保費', amount: 0, isDefault: true }, { name: '健保費', amount: 0, isDefault: true },
@@ -819,8 +815,8 @@
         const selectedMonth = document.getElementById('filterMonth').value;
         const config = getConfigForMonth(selectedMonth);
         
-        document.getElementById('uiMonthIndicator1').innerText = i18n[currentLang].apply_to(selectedMonth);
-        document.getElementById('uiMonthIndicator2').innerText = i18n[currentLang].apply_to(selectedMonth);
+        // Remove document.getElementById('uiMonthIndicator1').innerText = i18n[currentLang].apply_to(selectedMonth);
+        // Remove document.getElementById('uiMonthIndicator2').innerText = i18n[currentLang].apply_to(selectedMonth);
         
         document.getElementById('baseSalary').value = config.baseSalary;
         document.getElementById('monthNightMode').checked = config.isNightShiftMode || false;
@@ -1002,7 +998,7 @@
 
         const newRecord = {
             id: Date.now(), date: date, 
-            salaryMonth: getSalaryMonth(date), // 全部統一使用 26~25 為歸屬月份
+            salaryMonth: getSalaryMonth(date),
             mainType: mainType, subType: subType, hours: hours
         };
         
@@ -1219,14 +1215,12 @@
         const isNightMode = currentMonthConfig.isNightShiftMode;
         const nightAllowance = currentMonthConfig.nightShiftAllowance !== undefined ? parseFloat(currentMonthConfig.nightShiftAllowance) : 300;
 
-        // 計算夜班出勤天數 (依據當月1號到月底計算)
         let attendanceCount = 0;
         let startD = new Date(pYear, pMonth - 1, 1);
         let endD = new Date(pYear, pMonth, 0); 
         
         records.sort((a, b) => new Date(a.date) - new Date(b.date));
         
-        // 嚴格將加班費與請假扣款的計算鎖定在 salaryMonth 內 (即 26~25)
         const filteredRecords = records.filter(r => r.salaryMonth === selectedMonth);
 
         let currD = new Date(startD);
@@ -1335,7 +1329,6 @@
         document.getElementById('dashLeave').innerText = `-$ ${totalLeaveDeduct}`;
         document.getElementById('dashDeduct').innerText = `-$ ${fixedDeductions}`;
         
-        // 儀表板動態隱藏與排列切換
         const dashboardEl = document.getElementById('summaryDashboard');
         const nightItem = document.getElementById('dashNightItem');
         
