@@ -137,9 +137,23 @@
         .rate-grid .form-group { margin-bottom: 0; }
         .rate-grid label { font-size: 14px; color: #555; }
         
+        /* 統計區塊樣式 */
+        .stats-card {
+            background: #fff; border: 1.5px solid var(--primary-color); border-radius: 10px; 
+            padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(94, 72, 132, 0.05);
+        }
+        .stats-card h3 { margin-top: 0; margin-bottom: 15px; color: var(--dashboard-bg); border-bottom: 2px solid var(--primary-light); padding-bottom: 8px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .stat-box { background: #fdfaf6; padding: 15px; border-radius: 8px; border: 1px solid #fce4ec; display: flex; flex-direction: column; gap: 5px; }
+        .stat-box span { font-size: 14px; color: #555; font-weight: bold; }
+        .stat-box strong { font-size: 20px; color: var(--dashboard-bg); }
+        .stat-box .hl-orange { color: var(--warning-color); }
+        .stat-box .hl-night { color: var(--night-color); }
+
+        /* 總結算儀表板 5+1 格 */
         .summary-dashboard { 
             background: var(--dashboard-bg); color: white; border-radius: 10px; padding: 25px; 
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
         }
         .dashboard-item { background: rgba(255,255,255,0.1); padding: 20px 15px; border-radius: 8px; text-align: center; }
         .dashboard-item .title { font-size: 16px; color: #dcdfe6; margin-bottom: 8px; }
@@ -331,9 +345,9 @@
                         </label>
                     </div>
 
-                    <!-- 新增：班別設定 -->
+                    <!-- 班別設定 -->
                     <div class="form-group">
-                        <label data-i18n="shift_label">輪班班別設定 (初始化月曆休假)</label>
+                        <label data-i18n="shift_label">輪班班別設定</label>
                         <select id="shiftType" onchange="onConfigInputChange()">
                             <option value="A">A班 (六休 日例)</option>
                             <option value="B">B班 (日休 一例)</option>
@@ -352,7 +366,7 @@
                     </div>
                     
                     <div class="form-group" id="nightAllowanceWrapper" style="display: none;">
-                        <label data-i18n="night_allowance_label">夜班津貼 (元/班) - 預設以8小時換算</label>
+                        <label data-i18n="night_allowance_label">夜班出勤津貼 (元/天)</label>
                         <input type="number" id="nightShiftAllowance" value="300" oninput="onConfigInputChange()">
                     </div>
                     
@@ -366,12 +380,8 @@
                             <div><strong id="totalBaseDisplay" style="font-size: 20px; color: var(--dashboard-bg);">0</strong> <span style="font-size: 14px; color: #555;" data-i18n="unit_yuan">元</span></div>
                         </div>
                         <div class="summary-row" id="dayRateRow">
-                            <span style="font-size: 15px; color: #333; font-weight: bold;" data-i18n="hourly_rate_day">日班時薪 (總底薪/240)：</span>
+                            <span style="font-size: 15px; color: #333; font-weight: bold;" data-i18n="hourly_rate_day">時薪 (總底薪/240)：</span>
                             <div><strong id="hourlyRateDisplay" style="font-size: 20px; color: var(--warning-color);">0.00</strong> <span style="font-size: 14px; color: #555;" data-i18n="unit_yuan">元</span></div>
-                        </div>
-                        <div class="summary-row" id="nightRateDisplayWrapper" style="display: none;">
-                            <span style="font-size: 15px; color: #333; font-weight: bold;" data-i18n="hourly_rate_night">夜班時薪 (+夜班津貼/8)：</span>
-                            <div><strong id="nightHourlyRateDisplay" style="font-size: 20px; color: var(--night-color);">0.00</strong> <span style="font-size: 14px; color: #555;" data-i18n="unit_yuan">元</span></div>
                         </div>
                     </div>
                 </div>
@@ -418,7 +428,6 @@
                     </div>
                 </div>
                 <div class="rate-grid" id="dailyInputGrid" style="grid-template-columns: 1fr 1fr 1fr;">
-                    <!-- 加上 onchange 連動 -->
                     <div class="form-group"><label data-i18n="date">日期</label><input type="date" id="recordDate" onchange="onDateChange()"></div>
                     <div class="form-group"><label id="subTypeLabel" data-i18n="type">類型</label><select id="recordSubType" onchange="updateDefaultHours()"></select></div>
                     <div class="form-group"><label data-i18n="hours">時數</label><input type="number" id="recordHours" value="2.5" step="0.5" min="0"></div>
@@ -429,16 +438,44 @@
         </div>
     </div>
 
+    <!-- 📊 本月統計面板 -->
+    <div class="stats-card">
+        <h3 data-i18n="stat_title">📊 本月統計 (26日~25日)</h3>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span data-i18n="stat_day_shift">日班出勤：</span>
+                <strong id="statDayShift">0 天</strong>
+            </div>
+            <div class="stat-box">
+                <span data-i18n="stat_night_shift">夜班出勤：</span>
+                <strong id="statNightShift" class="hl-night">0 天</strong>
+            </div>
+            <div class="stat-box">
+                <span data-i18n="stat_night_allowance">夜班津貼總額：</span>
+                <strong id="statNightAllowance" class="hl-night">0 元</strong>
+            </div>
+            <div class="stat-box">
+                <span data-i18n="stat_ot_hours">總加班時數：</span>
+                <strong id="statOTHours" class="hl-orange">0 H</strong>
+            </div>
+            <div class="stat-box">
+                <span data-i18n="stat_ot_pay">總加班費：</span>
+                <strong id="statOTPay" class="hl-orange">0 元</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- 總結算儀表板 5+1 -->
     <div class="summary-dashboard">
         <div class="dashboard-item"><div class="title" data-i18n="dash_base">當月核定總底薪 (A)</div><div class="value" id="dashBase">0</div></div>
         <div class="dashboard-item"><div class="title" data-i18n="dash_ot">應發加班費 (B)</div><div class="value val-plus" id="dashOT">+$ 0</div></div>
-        <div class="dashboard-item"><div class="title" data-i18n="dash_leave">請假扣薪 (C)</div><div class="value val-minus" id="dashLeave">-$ 0</div></div>
-        <div class="dashboard-item"><div class="title" data-i18n="dash_deduct">固定扣款 (D)</div><div class="value val-minus" id="dashDeduct">-$ 0</div></div>
-        <div class="dashboard-item final"><div class="title" data-i18n="dash_final">本月實領預估 (A+B-C-D)</div><div class="value" id="dashFinal">$ 0</div></div>
+        <div class="dashboard-item"><div class="title" data-i18n="dash_night_allow">夜班津貼 (C)</div><div class="value val-plus" id="dashNightAllow" style="color:var(--night-color);">+$ 0</div></div>
+        <div class="dashboard-item"><div class="title" data-i18n="dash_leave">請假扣薪 (D)</div><div class="value val-minus" id="dashLeave">-$ 0</div></div>
+        <div class="dashboard-item"><div class="title" data-i18n="dash_deduct">固定扣款 (E)</div><div class="value val-minus" id="dashDeduct">-$ 0</div></div>
+        <div class="dashboard-item final"><div class="title" data-i18n="dash_final">本月實領預估 (A+B+C-D-E)</div><div class="value" id="dashFinal">$ 0</div></div>
     </div>
 
     <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto;">
-        <!-- 新增調休編輯模式開關 -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
             <h3 id="tableTitleText" style="margin: 0; min-width: max-content;">📅 當月出勤異動明細</h3>
             <div class="toggle-switch-group" style="margin: 0; padding: 6px 12px; background: #fff5f5; border-color: #ffcdd2;">
@@ -504,13 +541,14 @@
             'select_month': '🔍 選擇要檢視與設定的月份：', 'top_quick': '當月預估實領：', 'top_ot_hours': '總加班時數：',
             'month_format': (y, m) => `${y} 年 ${m} 月份結算`, 'period_range': (y1, m1, y2, m2) => `📅 區間：${y1}-${m1}-26 至 ${y2}-${m2}-25`,
             'apply_to': (m) => `套用於：${m} 結算`, 'sec1_title': '1. 該月薪資結構', 'sec1_desc': '若不修改，將自動沿用上個月的設定檔。',
-            'base_salary': '本薪 (元)', 'night_allowance_label': '夜班津貼 (元/班) - 預設以8小時換算', 'allowance_label': '該月各項津貼 (加總計算時薪)', 'add_allowance': '➕ 新增津貼項目', 'allowance_ph': '津貼名稱(如:全勤)',
-            'total_base': '核定總底薪 (本薪+津貼)：', 'hourly_rate_day': '日班時薪 (總底薪/240)：', 'hourly_rate_night': '夜班時薪 (+夜班津貼/8)：',
+            'base_salary': '本薪 (元)', 'night_allowance_label': '夜班出勤津貼 (元/天)', 'allowance_label': '該月各項津貼 (加總計算時薪)', 'add_allowance': '➕ 新增津貼項目', 'allowance_ph': '津貼名稱(如:全勤)',
+            'total_base': '核定總底薪 (本薪+津貼)：', 'hourly_rate_day': '時薪 (總底薪/240)：',
             'sec2_title': '2. 該月固定扣除項目', 'add_deduction': '➕ 新增其他扣除項目', 'deduction_ph': '扣款名稱',
             'sec3_title': '3. 系統加班費倍率設定', 'wd1': '工作日(前2hr)', 'wd2': '工作日(後2hr)', 'rst1': '休假日(前2hr)', 'rst2': '休假日(3-8hr)', 'rst3': '休假日(9-12hr)', 'hol': '例/國/颱假日倍率',
             'sec4_title': '4. 每日加班 / 請假申報', 'type_ot': '➕ 加班', 'type_leave': '➖ 請假', 'date': '日期', 'type': '類型', 'hours': '時數', 'is_night_shift': '🌙 啟用夜班津貼模式', 'btn_add_record': '⬇️ 新增 / 更新此筆紀錄',
-            'dash_base': '當月核定總底薪 (A)', 'dash_ot': '應發加班費 (B)', 'dash_leave': '請假扣薪 (C)', 'dash_deduct': '固定扣款 (D)', 'dash_final': '本月實領預估 (A+B-C-D)',
-            'table_title': '當月出勤異動明細', 'cal_edit_mode': '✏️ 開啟調休編輯模式', 'shift_label': '輪班班別設定 (初始化月曆休假)',
+            'stat_title': '📊 本月統計 (26日~25日)', 'stat_day_shift': '日班出勤：', 'stat_night_shift': '夜班出勤：', 'stat_night_allowance': '夜班津貼總額：', 'stat_ot_hours': '總加班時數：', 'stat_ot_pay': '總加班費：',
+            'dash_base': '當月核定總底薪 (A)', 'dash_ot': '應發加班費 (B)', 'dash_night_allow': '夜班津貼 (C)', 'dash_leave': '請假扣薪 (D)', 'dash_deduct': '固定扣款 (E)', 'dash_final': '本月實領預估 (A+B+C-D-E)',
+            'table_title': '當月出勤異動明細', 'cal_edit_mode': '✏️ 開啟調休編輯模式', 'shift_label': '輪班班別設定',
             'th_date': '日期', 'th_month': '歸屬發薪月', 'th_category': '類別', 'th_subtype': '細項類型', 'th_hours': '時數', 'th_mobile_date': '日期', 'th_mobile_detail': '明細', 'th_amount': '影響金額', 'th_action': '操作',
             'cloud_title': '☁️ 跨裝置/雲端同步', 'cloud_desc': '在電腦建立好的資料，請點「匯出備份」。到手機開啟此網頁時，點「匯入備份」就能無縫接軌！',
             'btn_export': '📤 匯出備份檔 (.json)', 'btn_import': '📥 匯入雲端備份', 'btn_clear': '🗑️ 清除當前設備的所有紀錄 (恢復原廠狀態)',
@@ -527,13 +565,14 @@
             'select_month': '🔍 Chọn tháng để xem & cài đặt:', 'top_quick': 'Thực lãnh dự kiến: ', 'top_ot_hours': 'Tổng giờ tăng ca: ',
             'month_format': (y, m) => `Kỳ lương tháng ${m}/${y}`, 'period_range': (y1, m1, y2, m2) => `📅 Kỳ: ${y1}-${m1}-26 đến ${y2}-${m2}-25`,
             'apply_to': (m) => `Áp dụng cho: kỳ ${m}`, 'sec1_title': '1. Cấu trúc lương tháng này', 'sec1_desc': 'Nếu không sửa đổi, sẽ tự động áp dụng cài đặt của tháng trước.',
-            'base_salary': 'Lương cơ bản (VND)', 'night_allowance_label': 'Phụ cấp ca đêm (VND/ca) - Mặc định 8 giờ', 'allowance_label': 'Phụ cấp tháng này (cộng vào để tính lương theo giờ)', 'add_allowance': '➕ Thêm phụ cấp', 'allowance_ph': 'Tên phụ cấp (vd: Chuyên cần)',
-            'total_base': 'Tổng lương duyệt (Lương + Phụ cấp):', 'hourly_rate_day': 'Lương giờ ca ngày (Tổng/240):', 'hourly_rate_night': 'Lương giờ ca đêm (+PC/8):',
+            'base_salary': 'Lương cơ bản (VND)', 'night_allowance_label': 'Phụ cấp ca đêm (VND/ngày)', 'allowance_label': 'Phụ cấp tháng này (cộng vào để tính lương theo giờ)', 'add_allowance': '➕ Thêm phụ cấp', 'allowance_ph': 'Tên phụ cấp (vd: Chuyên cần)',
+            'total_base': 'Tổng lương duyệt (Lương + Phụ cấp):', 'hourly_rate_day': 'Lương giờ (Tổng/240):',
             'sec2_title': '2. Các khoản khấu trừ cố định', 'add_deduction': '➕ Thêm khoản khấu trừ khác', 'deduction_ph': 'Tên khoản trừ',
             'sec3_title': '3. Cài đặt hệ số làm thêm', 'wd1': 'Ngày thường (2 giờ đầu)', 'wd2': 'Ngày thường (Sau 2 giờ)', 'rst1': 'Ngày nghỉ (2 giờ đầu)', 'rst2': 'Ngày nghỉ (3-8 giờ)', 'rst3': 'Ngày nghỉ (9-12 giờ)', 'hol': 'Hệ số Lễ/Quốc khánh/Bão',
             'sec4_title': '4. Báo cáo Tăng ca / Nghỉ phép', 'type_ot': '➕ Tăng ca', 'type_leave': '➖ Nghỉ phép', 'date': 'Ngày', 'type': 'Loại', 'hours': 'Số giờ', 'is_night_shift': '🌙 Bật PC ca đêm', 'btn_add_record': '⬇️ Thêm / Cập nhật bản ghi',
-            'dash_base': 'Tổng lương cơ bản (A)', 'dash_ot': 'Tiền tăng ca (B)', 'dash_leave': 'Khấu trừ nghỉ phép (C)', 'dash_deduct': 'Khấu trừ cố định (D)', 'dash_final': 'Thực lãnh dự kiến (A+B-C-D)',
-            'table_title': 'Chi tiết chuyên cần tháng này', 'cal_edit_mode': '✏️ Chế độ chỉnh sửa lịch', 'shift_label': 'Cài đặt ca làm việc (Khởi tạo lịch)',
+            'stat_title': '📊 Thống kê tháng này (26 đến 25)', 'stat_day_shift': 'Ca ngày: ', 'stat_night_shift': 'Ca đêm: ', 'stat_night_allowance': 'Tổng PC đêm: ', 'stat_ot_hours': 'Giờ tăng ca: ', 'stat_ot_pay': 'Tiền tăng ca: ',
+            'dash_base': 'Tổng lương cơ bản (A)', 'dash_ot': 'Tiền tăng ca (B)', 'dash_night_allow': 'PC ca đêm (C)', 'dash_leave': 'Khấu trừ nghỉ phép (D)', 'dash_deduct': 'Khấu trừ cố định (E)', 'dash_final': 'Thực lãnh dự kiến (A+B+C-D-E)',
+            'table_title': 'Chi tiết chuyên cần tháng này', 'cal_edit_mode': '✏️ Chế độ chỉnh sửa lịch', 'shift_label': 'Cài đặt ca làm việc',
             'th_date': 'Ngày', 'th_month': 'Tháng nhận lương', 'th_category': 'Hạng mục', 'th_subtype': 'Loại chi tiết', 'th_hours': 'Số giờ', 'th_mobile_date': 'Ngày', 'th_mobile_detail': 'Chi tiết', 'th_amount': 'Số tiền ảnh hưởng', 'th_action': 'Thao tác',
             'cloud_title': '☁️ Đồng bộ đám mây/Thiết bị', 'cloud_desc': 'Dữ liệu tạo trên máy tính, vui lòng nhấp "Xuất bản sao lưu". Khi mở trên điện thoại, hãy nhấp "Nhập sao lưu đám mây" để đồng bộ liền mạch!',
             'btn_export': '📤 Xuất bản sao lưu (.json)', 'btn_import': '📥 Nhập sao lưu đám mây', 'btn_clear': '🗑️ Xóa tất cả bản ghi thiết bị này (Mặc định)',
@@ -578,15 +617,14 @@
     const subtypeKeys = { '工作日': 'sub_wd', '休假日': 'sub_rst', '例假日': 'sub_reg', '國定假日': 'sub_hol', '颱風假': 'sub_typhoon', '事假': 'sub_pl', '病假': 'sub_sl', '生理假': 'sub_ml', '特休': 'sub_al' };
     const defDeductKeys = { '勞保費': 'def_d1', '健保費': 'def_d2', '眷保費': 'def_d3', '餐費扣抵': 'def_d4' };
 
-    // --- 內建台灣常見國定假日 (2025-2027 預估與確定版) ---
+    // 內建台灣常見國定假日 (2025-2027 預估與確定版)
     const taiwanNationalHolidays = [
         "2025-01-01", "2025-01-25", "2025-01-26", "2025-01-27", "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31", "2025-02-28", "2025-04-03", "2025-04-04", "2025-05-01", "2025-05-30", "2025-05-31", "2025-10-06", "2025-10-10",
         "2026-01-01", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-23", "2026-02-24", "2026-02-28", "2026-04-03", "2026-04-04", "2026-04-05", "2026-04-06", "2026-05-01", "2026-06-19", "2026-09-25", "2026-10-10",
         "2027-01-01", "2027-02-05", "2027-02-06", "2027-02-07", "2027-02-08", "2027-02-09", "2027-02-10", "2027-02-11", "2027-02-28", "2027-04-04", "2027-04-05", "2027-05-01", "2027-06-09", "2027-09-15", "2027-10-10"
     ];
 
-    // --- 輪班規則對應表 ---
-    // 0: 星期日, 1: 星期一, ... 6: 星期六
+    // 輪班規則對應表 (0: 星期日, 1: 星期一, ... 6: 星期六)
     const shiftRules = {
         'A': { rest: 6, regular: 0 },
         'B': { rest: 0, regular: 1 },
@@ -777,21 +815,22 @@
         };
     }
 
-    // --- 核心功能：判斷某一日期的屬性 (支援使用者調休複寫) ---
-    function resolveDayType(dateStr, config) {
-        // 1. 最高優先級：使用者手動調休編輯
+    function resolveDayType(dateStr) {
+        const sMonth = getSalaryMonth(dateStr);
+        const config = getConfigForMonth(sMonth);
+        
         if (config.customDays && config.customDays[dateStr]) {
-            return config.customDays[dateStr]; // 'workday', 'restday', 'regularHoliday', 'nationalHoliday'
+            return config.customDays[dateStr]; 
         }
-        // 2. 次級優先級：內建台灣國定假日
         if (taiwanNationalHolidays.includes(dateStr)) {
             return 'nationalHoliday';
         }
-        // 3. 基礎優先級：根據設定的班別判斷星期
+        
         const date = new Date(dateStr);
         const dow = date.getDay();
         const shift = config.shiftType || 'A';
         const rule = shiftRules[shift];
+        
         if (dow === rule.rest) return 'restday';
         if (dow === rule.regular) return 'regularHoliday';
         return 'workday';
@@ -870,7 +909,6 @@
             deductions.push({ name: saveName, amount: inputs[1].value, isDefault: isDefault });
         });
 
-        // 繼承目前的 customDays，不重置它
         const currentConfig = monthlyConfigs[selectedMonth] || getConfigForMonth(selectedMonth);
         const customDays = currentConfig.customDays || {};
 
@@ -885,42 +923,29 @@
 
     function calculateBaseAndRate() {
         let base = parseFloat(document.getElementById('baseSalary').value) || 0;
-        let isNightShiftMode = document.getElementById('monthNightMode').checked;
-        let nightAllowance = parseFloat(document.getElementById('nightShiftAllowance').value) || 0;
-        
         let totalAllowance = 0;
         document.querySelectorAll('.allowance-amount').forEach(input => { totalAllowance += parseFloat(input.value) || 0; });
         
         const calculatedTotalBase = base + totalAllowance;
         const hourlyRate = calculatedTotalBase / 240;
-        const nightHourlyRate = hourlyRate + (nightAllowance / 8);
 
         document.getElementById('totalBaseDisplay').innerText = formatNumber(calculatedTotalBase);
         document.getElementById('hourlyRateDisplay').innerText = formatNumber(hourlyRate);
         
-        document.getElementById('nightRateDisplayWrapper').style.display = isNightShiftMode ? 'flex' : 'none';
-        document.getElementById('nightHourlyRateDisplay').innerText = formatNumber(nightHourlyRate);
-        
         updateUI(); 
     }
 
-    // --- 連動：當日期改變時，自動判定該日屬性，更新下拉選單 ---
     function onDateChange() {
         const mainType = document.querySelector('input[name="mainType"]:checked').value;
         const dateStr = document.getElementById('recordDate').value;
         const subTypeSelect = document.getElementById('recordSubType');
         
-        if (mainType === '加班' && dateStr) {
-            const monthStr = getSalaryMonth(dateStr);
-            const config = getConfigForMonth(monthStr);
-            const dt = resolveDayType(dateStr, config);
-            
-            // 將系統判定套入
+        if (mainType === '加班' && dateStr && subTypeSelect.value !== '颱風假') {
+            const dt = resolveDayType(dateStr);
             if (dt === 'restday') subTypeSelect.value = '休假日';
             else if (dt === 'regularHoliday') subTypeSelect.value = '例假日';
             else if (dt === 'nationalHoliday') subTypeSelect.value = '國定假日';
             else subTypeSelect.value = '工作日';
-            
             updateDefaultHours();
         }
     }
@@ -933,7 +958,7 @@
         if (mainType === "加班") {
             if (subType === "工作日") hoursInput.value = 2.5;
             else if (subType === "颱風假") hoursInput.value = 8;
-            else hoursInput.value = 10.5;
+            else hoursInput.value = 10.5; 
         } else {
             hoursInput.value = 8; 
         }
@@ -949,17 +974,16 @@
                 <option value="例假日">${t('sub_reg')}</option>
                 <option value="國定假日">${t('sub_hol')}</option>
                 <option value="颱風假">${t('sub_typhoon')}</option>`;
-            subTypeSelect.disabled = true; // 加班時鎖定手動選擇，避免出錯，交給系統判定
+            subTypeSelect.disabled = true; 
             
-            // 新增提示讓使用者知道是自動判定
             let option = document.createElement("option");
             option.text = `(${t('auto_detect')})`;
             option.disabled = true;
             subTypeSelect.add(option, 0);
             
-            onDateChange(); // 立即判定
+            onDateChange(); 
         } else {
-            subTypeSelect.disabled = false; // 請假允許手動選擇
+            subTypeSelect.disabled = false; 
             subTypeSelect.innerHTML = `
                 <option value="事假">${t('sub_pl')}</option>
                 <option value="病假">${t('sub_sl')}</option>
@@ -981,18 +1005,15 @@
             alert(t('alert_unit_err'));
             return;
         }
-
-        // 強制確保儲存時，加班屬性符合月曆最終設定 (除了颱風假)
+        
         if (mainType === "加班" && subType !== "颱風假") {
-            const monthStr = getSalaryMonth(date);
-            const config = getConfigForMonth(monthStr);
-            const dt = resolveDayType(date, config);
+            const dt = resolveDayType(date);
             if (dt === 'restday') subType = '休假日';
             else if (dt === 'regularHoliday') subType = '例假日';
             else if (dt === 'nationalHoliday') subType = '國定假日';
             else subType = '工作日';
         }
-        
+
         const newRecord = {
             id: Date.now(), date: date, salaryMonth: getSalaryMonth(date),
             mainType: mainType, subType: subType, hours: hours
@@ -1020,16 +1041,12 @@
         const { mainType, subType, hours, salaryMonth } = record;
         const config = getConfigForMonth(salaryMonth);
         const base = parseFloat(config.baseSalary) || 0;
-        const isNightShiftMode = config.isNightShiftMode || false;
-        const nightAllowance = config.nightShiftAllowance !== undefined ? parseFloat(config.nightShiftAllowance) : 300;
         const totalAllowance = config.allowances.reduce((sum, a) => sum + (parseFloat(a.amount) || 0), 0);
         
-        const baseHourlyRate = (base + totalAllowance) / 240;
+        const recordHourlyRate = (base + totalAllowance) / 240;
         let amount = 0;
 
         if (mainType === "加班") {
-            const recordHourlyRate = isNightShiftMode ? baseHourlyRate + (nightAllowance / 8) : baseHourlyRate;
-            
             const r_wd1 = parseFloat(document.getElementById('rate_wd1').value) || 1.34;
             const r_wd2 = parseFloat(document.getElementById('rate_wd2').value) || 1.67;
             const r_rst1 = parseFloat(document.getElementById('rate_rst1').value) || 2.00;
@@ -1037,10 +1054,9 @@
             const r_rst3 = parseFloat(document.getElementById('rate_rst3').value) || 2.67;
             const r_hol = parseFloat(document.getElementById('rate_hol').value) || 2.0;
 
-            // 確保加班費 100% 同步當下月曆設定，除非特別指定為颱風假
             let effectiveSubType = subType;
             if (subType !== "颱風假") {
-                const dt = resolveDayType(record.date, config);
+                const dt = resolveDayType(record.date);
                 if (dt === 'restday') effectiveSubType = '休假日';
                 else if (dt === 'regularHoliday') effectiveSubType = '例假日';
                 else if (dt === 'nationalHoliday') effectiveSubType = '國定假日';
@@ -1057,46 +1073,52 @@
             } else { amount = hours * recordHourlyRate * r_hol; }
             return Math.round(amount);
         } else {
-            if (subType === "事假") amount = hours * baseHourlyRate * 1.0;
-            else if (subType === "病假" || subType === "生理假") amount = hours * baseHourlyRate * 0.5; 
+            if (subType === "事假") amount = hours * recordHourlyRate * 1.0;
+            else if (subType === "病假" || subType === "生理假") amount = hours * recordHourlyRate * 0.5; 
             else if (subType === "特休") amount = 0;
             return -Math.round(amount);
         }
     }
 
-    // --- 月曆格子點擊調休事件 ---
     function handleCellClick(dateStr) {
         const isEditMode = document.getElementById('calEditMode').checked;
         if(!isEditMode) return;
         
-        const monthStr = document.getElementById('filterMonth').value;
-        if (!monthlyConfigs[monthStr]) getConfigForMonth(monthStr); // 確保物件存在
-        if (!monthlyConfigs[monthStr].customDays) monthlyConfigs[monthStr].customDays = {};
+        const sMonth = getSalaryMonth(dateStr);
+        if (!monthlyConfigs[sMonth]) monthlyConfigs[sMonth] = getConfigForMonth(sMonth);
+        if (!monthlyConfigs[sMonth].customDays) monthlyConfigs[sMonth].customDays = {};
         
-        const currentType = resolveDayType(dateStr, monthlyConfigs[monthStr]);
+        const currentType = resolveDayType(dateStr);
         let nextType = '';
-        
-        // 循環切換：工作日 -> 休假日 -> 例假日 -> 國定假日 -> (還原/工作日)
         if (currentType === 'workday') nextType = 'restday';
         else if (currentType === 'restday') nextType = 'regularHoliday';
         else if (currentType === 'regularHoliday') nextType = 'nationalHoliday';
         else if (currentType === 'nationalHoliday') nextType = 'workday';
         
-        monthlyConfigs[monthStr].customDays[dateStr] = nextType;
+        monthlyConfigs[sMonth].customDays[dateStr] = nextType;
         
-        // 如果切換回的狀態跟「系統預設」一樣，就刪除 override 以保持乾淨
-        const defaultConfig = JSON.parse(JSON.stringify(monthlyConfigs[monthStr]));
-        delete defaultConfig.customDays[dateStr];
-        const defaultType = resolveDayType(dateStr, defaultConfig);
+        const dummyConfig = JSON.parse(JSON.stringify(monthlyConfigs[sMonth]));
+        delete dummyConfig.customDays[dateStr];
+        let defaultType = 'workday';
+        if (taiwanNationalHolidays.includes(dateStr)) {
+            defaultType = 'nationalHoliday';
+        } else {
+            const dow = new Date(dateStr).getDay();
+            const shift = dummyConfig.shiftType || 'A';
+            const rule = shiftRules[shift];
+            if (dow === rule.rest) defaultType = 'restday';
+            if (dow === rule.regular) defaultType = 'regularHoliday';
+        }
+        
         if (nextType === defaultType) {
-            delete monthlyConfigs[monthStr].customDays[dateStr];
+            delete monthlyConfigs[sMonth].customDays[dateStr];
         }
         
         saveMemory();
-        updateUI(); // 立即重新渲染月曆與結算
+        updateUI();
     }
 
-    function renderCalendar(selectedMonthStr, filteredRecords, currentMonthConfig) {
+    function renderCalendar(selectedMonthStr, allRecords) {
         const parts = selectedMonthStr.split('-');
         let year = parseInt(parts[0]);
         let month = parseInt(parts[1]);
@@ -1106,10 +1128,10 @@
         if (prevMonth === 0) { prevMonth = 12; prevYear--; }
 
         const startDate = new Date(prevYear, prevMonth - 1, 26);
-        const endDate = new Date(year, month - 1, 25);
+        const endDate = new Date(year, month, 0); 
 
         const recordMap = {};
-        filteredRecords.forEach(r => {
+        allRecords.forEach(r => {
             if (!recordMap[r.date]) recordMap[r.date] = [];
             recordMap[r.date].push(r);
         });
@@ -1134,8 +1156,15 @@
                 displayDate = `${currentDate.getMonth()+1}/${currentDate.getDate()}`;
             }
 
-            // 判斷該日屬性並渲染右上角標籤
-            const dt = resolveDayType(dateStr, currentMonthConfig);
+            let extraStyle = '';
+            if (currentDate.getDate() === 26 && currentDate.getMonth() === month - 1) {
+                html += `<div style="grid-column: 1 / -1; background: var(--primary-light); color: var(--primary-color); text-align: center; font-size: 13px; padding: 6px 0; font-weight: bold; border-top: 1px dashed var(--primary-color); border-bottom: 1px dashed var(--primary-color); margin: 4px 0;">
+                    ⬇️ 本月加班結算截止 (25日) / 以下歸入下月計薪 ⬇️
+                </div>`;
+                extraStyle = ` style="grid-column-start: ${currentDate.getDay() + 1};"`;
+            }
+
+            const dt = resolveDayType(dateStr);
             let badgeHtml = '';
             if (dt === 'restday') badgeHtml = `<span class="dt-badge dt-rest">${t('badge_rest')}</span>`;
             else if (dt === 'regularHoliday') badgeHtml = `<span class="dt-badge dt-regular">${t('badge_regular')}</span>`;
@@ -1158,7 +1187,7 @@
             const cellClass = isEditMode ? 'calendar-cell edit-mode-on' : 'calendar-cell';
             const clickHandler = isEditMode ? `onclick="handleCellClick('${dateStr}')"` : '';
 
-            html += `<div class="${cellClass}" ${clickHandler}>
+            html += `<div class="${cellClass}" ${clickHandler}${extraStyle}>
                 <div class="day-header-wrapper">
                     <div class="calendar-date">${displayDate}</div>
                     ${badgeHtml}
@@ -1185,9 +1214,11 @@
         const selectedMonth = document.getElementById('filterMonth').value;
         const parts = selectedMonth.split('-');
         
-        const prevYear = parseInt(parts[1]) === 1 ? parseInt(parts[0]) - 1 : parts[0];
-        const prevMonth = String(parseInt(parts[1]) === 1 ? 12 : parseInt(parts[1]) - 1).padStart(2, '0');
-        document.getElementById('currentPeriodRange').innerText = i18n[currentLang].period_range(prevYear, prevMonth, parts[0], parts[1]);
+        const pYear = parseInt(parts[0]);
+        const pMonth = parseInt(parts[1]);
+        const prevYear = pMonth === 1 ? pYear - 1 : pYear;
+        const prevMonthStr = String(pMonth === 1 ? 12 : pMonth - 1).padStart(2, '0');
+        document.getElementById('currentPeriodRange').innerText = i18n[currentLang].period_range(prevYear, prevMonthStr, parts[0], parts[1]);
 
         let totalOTPay = 0;
         let totalOTHours = 0;
@@ -1195,6 +1226,45 @@
 
         const currentMonthConfig = getConfigForMonth(selectedMonth);
         const isNightMode = currentMonthConfig.isNightShiftMode;
+        const nightAllowance = currentMonthConfig.nightShiftAllowance !== undefined ? parseFloat(currentMonthConfig.nightShiftAllowance) : 300;
+
+        // 計算夜班出勤天數
+        let attendanceCount = 0;
+        let startD = new Date(prevYear, (pMonth === 1 ? 12 : pMonth - 1) - 1, 26);
+        let endD = new Date(pYear, pMonth - 1, 25);
+        
+        records.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const filteredRecords = records.filter(r => r.salaryMonth === selectedMonth);
+
+        let currD = new Date(startD);
+        while(currD <= endD) {
+            let dStr = `${currD.getFullYear()}-${String(currD.getMonth()+1).padStart(2,'0')}-${String(currD.getDate()).padStart(2,'0')}`;
+            let dt = resolveDayType(dStr);
+            let dRecs = filteredRecords.filter(r => r.date === dStr);
+            
+            let isWorkday = (dt === 'workday');
+            let hasOT = dRecs.some(r => r.mainType === '加班' && r.hours > 0);
+            let leaveHours = dRecs.filter(r => r.mainType === '請假').reduce((s, r) => s + r.hours, 0);
+            let isFullLeave = (leaveHours >= 8);
+
+            let attended = false;
+            if (isWorkday) {
+                if (!isFullLeave || hasOT) attended = true;
+            } else {
+                if (hasOT) attended = true;
+            }
+
+            if (attended) attendanceCount++;
+            currD.setDate(currD.getDate() + 1);
+        }
+
+        let nightShiftDays = isNightMode ? attendanceCount : 0;
+        let dayShiftDays = isNightMode ? 0 : attendanceCount;
+        let nightAllowanceTotal = nightShiftDays * nightAllowance;
+
+        document.getElementById('statDayShift').innerText = `${dayShiftDays} 天`;
+        document.getElementById('statNightShift').innerText = `${nightShiftDays} 天`;
+        document.getElementById('statNightAllowance').innerText = isNightMode ? `${nightShiftDays} × ${nightAllowance} = ${nightAllowanceTotal} 元` : `0 元`;
 
         const tableTitleEl = document.getElementById('tableTitleText');
         if (isNightMode) {
@@ -1216,10 +1286,7 @@
             });
         }
 
-        records.sort((a, b) => new Date(a.date) - new Date(b.date));
-        const filteredRecords = records.filter(r => r.salaryMonth === selectedMonth);
-
-        renderCalendar(selectedMonth, filteredRecords, currentMonthConfig);
+        renderCalendar(selectedMonth, records);
 
         filteredRecords.forEach(r => {
             const impact = calculateSingleImpact(r);
@@ -1236,10 +1303,9 @@
 
             const dateShort = r.date.substring(5).replace('-', '/'); 
             
-            // 確保明細顯示是最終計算用的類型 (與月曆同步)
             let effectiveSubType = r.subType;
             if (r.mainType === "加班" && r.subType !== "颱風假") {
-                const dt = resolveDayType(r.date, currentMonthConfig);
+                const dt = resolveDayType(r.date);
                 if (dt === 'restday') effectiveSubType = '休假日';
                 else if (dt === 'regularHoliday') effectiveSubType = '例假日';
                 else if (dt === 'nationalHoliday') effectiveSubType = '國定假日';
@@ -1273,12 +1339,16 @@
         const totalAllowance = currentMonthConfig.allowances.reduce((sum, a) => sum + (parseFloat(a.amount) || 0), 0);
         const fixedDeductions = currentMonthConfig.deductions.reduce((sum, d) => sum + (parseFloat(d.amount) || 0), 0);
         const monthTotalBase = base + totalAllowance;
-        const finalSalary = monthTotalBase + totalOTPay - totalLeaveDeduct - fixedDeductions;
+        const finalSalary = monthTotalBase + totalOTPay + nightAllowanceTotal - totalLeaveDeduct - fixedDeductions;
+
+        document.getElementById('statOTHours').innerText = `${totalOTHours} H`;
+        document.getElementById('statOTPay').innerText = `${totalOTPay} 元`;
 
         document.getElementById('topQuickSummaryAmount').innerText = `$ ${finalSalary}`;
         document.getElementById('topQuickOTHours').innerText = totalOTHours;
         document.getElementById('dashBase').innerText = `$ ${monthTotalBase}`;
         document.getElementById('dashOT').innerText = `+$ ${totalOTPay}`;
+        document.getElementById('dashNightAllow').innerText = `+$ ${nightAllowanceTotal}`;
         document.getElementById('dashLeave').innerText = `-$ ${totalLeaveDeduct}`;
         document.getElementById('dashDeduct').innerText = `-$ ${fixedDeductions}`;
         document.getElementById('dashFinal').innerText = `$ ${finalSalary}`;
