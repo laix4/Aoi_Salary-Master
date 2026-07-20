@@ -294,7 +294,7 @@
             #dailyInputGrid .form-group { width: 100%; margin-bottom: 0; }
             #dailyInputGrid .form-group input, #dailyInputGrid .form-group select { width: 100% !important; max-width: 100% !important; box-sizing: border-box; }
 
-            .filter-box { padding: 20px 15px; }
+            .filter-box { padding: 20px 15px; margin-bottom: 25px; }
             .filter-controls { flex-direction: column; align-items: stretch; gap: 15px; margin-top: 15px;}
             .filter-box select { width: 100% !important; margin-left: 0 !important; }
             .top-quick-summary { align-items: center; padding: 15px; }
@@ -331,6 +331,7 @@
 <body>
 
 <div class="container">
+    <!-- Header -->
     <div class="header-section">
         <input type="text" id="appTitle" class="editable-title" value="💰 薪資與加班費結算系統" onchange="saveMemory()">
         <div class="header-status-row">
@@ -345,6 +346,7 @@
         </div>
     </div>
 
+    <!-- 月份選擇與速覽 -->
     <div class="filter-box">
         <label style="font-weight:bold; color:var(--primary-color);" data-i18n="select_month">🔍 選擇要檢視與設定的月份：</label>
         <div class="filter-controls">
@@ -360,7 +362,42 @@
         </div>
         <div id="currentPeriodRange" style="font-size: 15px; color: #7f8c8d; margin-top: 12px; font-weight: bold;"></div>
     </div>
+
+    <!-- 調整排版：將月曆移至上方 -->
+    <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; margin-bottom: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+            <h3 id="tableTitleText" style="margin: 0; min-width: max-content;">📅 當月出勤異動明細</h3>
+            <div class="toggle-switch-group" style="margin: 0; padding: 6px 12px; background: #fff5f5; border-color: #ffcdd2;">
+                <label>
+                    <input type="checkbox" id="calEditMode" onchange="updateUI()">
+                    <span data-i18n="cal_edit_mode" style="font-size: 14px; font-weight: bold; color: var(--danger-color);">✏️ 開啟調休編輯模式</span>
+                </label>
+            </div>
+        </div>
+        
+        <div id="calendarView" class="calendar-container"></div>
+
+        <table>
+            <thead>
+                <tr id="tableHeaderRow">
+                    <th class="desktop-only" data-i18n="th_date">出勤日期</th>
+                    <th class="desktop-only" data-i18n="th_month">歸屬發薪月</th>
+                    <th class="desktop-only" data-i18n="th_category">類別</th>
+                    <th class="desktop-only" data-i18n="th_subtype">細項類型</th>
+                    <th class="desktop-only" data-i18n="th_hours">時數</th>
+                    
+                    <th class="mobile-only" data-i18n="th_mobile_date">日期</th>
+                    <th class="mobile-only" data-i18n="th_mobile_detail">明細</th>
+                    
+                    <th data-i18n="th_amount">影響金額</th>
+                    <th data-i18n="th_action">操作</th>
+                </tr>
+            </thead>
+            <tbody id="recordTableBody"></tbody>
+        </table>
+    </div>
     
+    <!-- 設定與打卡區塊 -->
     <div class="main-layout">
         <!-- 左欄 -->
         <div class="left-col">
@@ -464,6 +501,7 @@
                         <label><input type="radio" name="mainType" value="請假" onchange="toggleRecordType()"> <span data-i18n="type_leave">➖ 請假</span></label>
                     </div>
                 </div>
+                
                 <!-- 網格容器：透過 class 切換 3欄 或 2x2欄 -->
                 <div id="dailyInputGrid">
                     <div class="form-group"><label data-i18n="date">日期 (出勤日)</label><input type="date" id="recordDate" onchange="onDateChange()"></div>
@@ -496,40 +534,6 @@
             <div class="title" id="dashFinalTitle">本月實領預估 (A+B-C-D)</div>
             <div class="value" id="dashFinal">$ 0</div>
         </div>
-    </div>
-
-    <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto;">
-        <!-- 調休編輯模式開關 -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
-            <h3 id="tableTitleText" style="margin: 0; min-width: max-content;">📅 當月出勤異動明細</h3>
-            <div class="toggle-switch-group" style="margin: 0; padding: 6px 12px; background: #fff5f5; border-color: #ffcdd2;">
-                <label>
-                    <input type="checkbox" id="calEditMode" onchange="updateUI()">
-                    <span data-i18n="cal_edit_mode" style="font-size: 14px; font-weight: bold; color: var(--danger-color);">✏️ 開啟調休編輯模式</span>
-                </label>
-            </div>
-        </div>
-        
-        <div id="calendarView" class="calendar-container"></div>
-
-        <table>
-            <thead>
-                <tr id="tableHeaderRow">
-                    <th class="desktop-only" data-i18n="th_date">出勤日期</th>
-                    <th class="desktop-only" data-i18n="th_month">歸屬發薪月</th>
-                    <th class="desktop-only" data-i18n="th_category">類別</th>
-                    <th class="desktop-only" data-i18n="th_subtype">細項類型</th>
-                    <th class="desktop-only" data-i18n="th_hours">時數</th>
-                    
-                    <th class="mobile-only" data-i18n="th_mobile_date">日期</th>
-                    <th class="mobile-only" data-i18n="th_mobile_detail">明細</th>
-                    
-                    <th data-i18n="th_amount">影響金額</th>
-                    <th data-i18n="th_action">操作</th>
-                </tr>
-            </thead>
-            <tbody id="recordTableBody"></tbody>
-        </table>
     </div>
     
     <div class="cloud-section">
@@ -1442,7 +1446,6 @@
                 const dateShort = r.date.substring(5).replace('-', '/'); 
                 const finalSubType = r.subType || '未知';
                 
-                // 動態翻譯明細表細項
                 const displaySubType = t(subtypeKeys[finalSubType]) || finalSubType;
                 const abbrev = abbrevMap[currentLang][finalSubType] || finalSubType.substring(0, 1);
                 const sign = r.mainType === "加班" ? "+" : "-";
