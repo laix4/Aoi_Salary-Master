@@ -381,13 +381,14 @@
     <div class="main-layout">
         <!-- 左欄 -->
         <div class="left-col">
+            <!-- 預設隱藏 collapsible-content，圖示轉 -90deg -->
             <div class="card" style="margin-bottom: 0;">
                 <div class="collapsible-header" onclick="toggleSection('sec1-content', 'sec1-icon')">
                     <h3 data-i18n="sec1_title">1. 該月薪資結構</h3>
-                    <span id="sec1-icon" class="toggle-icon">▼</span>
+                    <span id="sec1-icon" class="toggle-icon" style="transform: rotate(-90deg);">▼</span>
                 </div>
                 
-                <div id="sec1-content" class="collapsible-content">
+                <div id="sec1-content" class="collapsible-content" style="display: none;">
                     <p style="font-size: 14px; color: #888; margin-top:0; margin-bottom: 15px;" data-i18n="sec1_desc">若不修改，將自動沿用上個月的設定檔。</p>
                     
                     <div class="toggle-switch-group" style="border-color: var(--primary-light);">
@@ -442,23 +443,25 @@
                 </div>
             </div>
 
+            <!-- 預設隱藏 -->
             <div class="card" style="margin-bottom: 0;">
                 <div class="collapsible-header" onclick="toggleSection('sec2-content', 'sec2-icon')">
                     <h3 data-i18n="sec2_title">2. 該月固定扣除項目</h3>
-                    <span id="sec2-icon" class="toggle-icon">▼</span>
+                    <span id="sec2-icon" class="toggle-icon" style="transform: rotate(-90deg);">▼</span>
                 </div>
-                <div id="sec2-content" class="collapsible-content">
+                <div id="sec2-content" class="collapsible-content" style="display: none;">
                     <div id="deductionList"></div>
                     <button class="btn-add" style="margin-top: 15px;" onclick="addDeductionItemUI('', 0, false); onConfigInputChange();" data-i18n="add_deduction">➕ 新增其他扣除項目</button>
                 </div>
             </div>
 
+            <!-- 預設隱藏 -->
             <div class="card" style="margin-bottom: 0;">
                 <div class="collapsible-header" onclick="toggleSection('sec3-content', 'sec3-icon')">
                     <h3 data-i18n="sec3_title">3. 系統加班費倍率設定</h3>
-                    <span id="sec3-icon" class="toggle-icon">▼</span>
+                    <span id="sec3-icon" class="toggle-icon" style="transform: rotate(-90deg);">▼</span>
                 </div>
-                <div id="sec3-content" class="collapsible-content">
+                <div id="sec3-content" class="collapsible-content" style="display: none;">
                     <div class="rate-grid">
                         <div class="form-group"><label data-i18n="wd1">工作日(前2hr)</label><input type="number" id="rate_wd1" value="1.34" step="0.01" oninput="saveGlobalRates()"></div>
                         <div class="form-group"><label data-i18n="wd2">工作日(後2hr)</label><input type="number" id="rate_wd2" value="1.67" step="0.01" oninput="saveGlobalRates()"></div>
@@ -471,7 +474,7 @@
             </div>
         </div>
 
-        <!-- 右欄：打卡申報 -->
+        <!-- 右欄：打卡申報 (預設展開) -->
         <div class="right-col">
             <div class="card" style="margin-bottom: 0;">
                 <h3 data-i18n="sec4_title">4. 每日加班 / 請假申報</h3>
@@ -496,7 +499,7 @@
         </div>
     </div>
 
-    <!-- 總結算儀表板 -->
+    <!-- 總結算儀表板 智慧排列 (4格或5格) -->
     <div class="summary-dashboard" id="summaryDashboard">
         <div class="dashboard-item"><div class="title" data-i18n="dash_base">當月核定總底薪 (A)</div><div class="value" id="dashBase">0</div></div>
         <div class="dashboard-item"><div class="title" data-i18n="dash_ot">應發加班費 (B)</div><div class="value val-plus" id="dashOT">+$ 0</div></div>
@@ -682,17 +685,6 @@
         }
     }
 
-    function initCollapsible() {
-        if (window.innerWidth <= 768) {
-            document.getElementById('sec1-content').style.display = "none";
-            document.getElementById('sec1-icon').style.transform = "rotate(-90deg)";
-            document.getElementById('sec2-content').style.display = "none";
-            document.getElementById('sec2-icon').style.transform = "rotate(-90deg)";
-            document.getElementById('sec3-content').style.display = "none";
-            document.getElementById('sec3-icon').style.transform = "rotate(-90deg)";
-        }
-    }
-
     window.onload = function() {
         loadMemory(); 
         const today = new Date();
@@ -700,7 +692,6 @@
         buildMonthDropdown();
         document.getElementById('filterMonth').value = getSalaryMonth(today.toISOString().split('T')[0]);
         applyTranslations(); 
-        initCollapsible(); 
     };
 
     function buildMonthDropdown() {
