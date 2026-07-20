@@ -203,7 +203,7 @@
         .summary-row:first-child { border-top: none; padding-top: 0; margin-top: 0; }
 
         /* 月曆與屬性標籤 UI */
-        .calendar-container { margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #fff;}
+        .calendar-container { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #fff;}
         .calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--primary-light); text-align: center; font-weight: bold; color: var(--dashboard-bg); }
         .calendar-header div { padding: 10px 5px; border-bottom: 1px solid var(--border-color); font-size: 14px;}
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
@@ -363,10 +363,10 @@
         <div id="currentPeriodRange" style="font-size: 15px; color: #7f8c8d; margin-top: 12px; font-weight: bold;"></div>
     </div>
 
-    <!-- 調整排版：將月曆移至上方 -->
-    <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; margin-bottom: 25px;">
+    <!-- 獨立出來的：全月圖 (月曆) -->
+    <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 25px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
-            <h3 id="tableTitleText" style="margin: 0; min-width: max-content;">📅 當月出勤異動明細</h3>
+            <h3 style="margin: 0; min-width: max-content;" data-i18n="cal_title">📅 當月出勤月曆</h3>
             <div class="toggle-switch-group" style="margin: 0; padding: 6px 12px; background: #fff5f5; border-color: #ffcdd2;">
                 <label>
                     <input type="checkbox" id="calEditMode" onchange="updateUI()">
@@ -374,27 +374,7 @@
                 </label>
             </div>
         </div>
-        
         <div id="calendarView" class="calendar-container"></div>
-
-        <table>
-            <thead>
-                <tr id="tableHeaderRow">
-                    <th class="desktop-only" data-i18n="th_date">出勤日期</th>
-                    <th class="desktop-only" data-i18n="th_month">歸屬發薪月</th>
-                    <th class="desktop-only" data-i18n="th_category">類別</th>
-                    <th class="desktop-only" data-i18n="th_subtype">細項類型</th>
-                    <th class="desktop-only" data-i18n="th_hours">時數</th>
-                    
-                    <th class="mobile-only" data-i18n="th_mobile_date">日期</th>
-                    <th class="mobile-only" data-i18n="th_mobile_detail">明細</th>
-                    
-                    <th data-i18n="th_amount">影響金額</th>
-                    <th data-i18n="th_action">操作</th>
-                </tr>
-            </thead>
-            <tbody id="recordTableBody"></tbody>
-        </table>
     </div>
     
     <!-- 設定與打卡區塊 -->
@@ -501,7 +481,6 @@
                         <label><input type="radio" name="mainType" value="請假" onchange="toggleRecordType()"> <span data-i18n="type_leave">➖ 請假</span></label>
                     </div>
                 </div>
-                
                 <!-- 網格容器：透過 class 切換 3欄 或 2x2欄 -->
                 <div id="dailyInputGrid">
                     <div class="form-group"><label data-i18n="date">日期 (出勤日)</label><input type="date" id="recordDate" onchange="onDateChange()"></div>
@@ -517,7 +496,7 @@
         </div>
     </div>
 
-    <!-- 總結算儀表板 智慧排列 (4格或5格) -->
+    <!-- 總結算儀表板 -->
     <div class="summary-dashboard" id="summaryDashboard">
         <div class="dashboard-item"><div class="title" data-i18n="dash_base">當月核定總底薪 (A)</div><div class="value" id="dashBase">0</div></div>
         <div class="dashboard-item"><div class="title" data-i18n="dash_ot">應發加班費 (B)</div><div class="value val-plus" id="dashOT">+$ 0</div></div>
@@ -534,6 +513,29 @@
             <div class="title" id="dashFinalTitle">本月實領預估 (A+B-C-D)</div>
             <div class="value" id="dashFinal">$ 0</div>
         </div>
+    </div>
+
+    <!-- 獨立出來的：明細表 (保留在下方) -->
+    <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; margin-bottom: 25px;">
+        <h3 id="tableTitleText" style="margin-top: 0; margin-bottom: 15px; min-width: max-content;" data-i18n="table_title">📅 當月出勤異動明細</h3>
+        <table>
+            <thead>
+                <tr id="tableHeaderRow">
+                    <th class="desktop-only" data-i18n="th_date">出勤日期</th>
+                    <th class="desktop-only" data-i18n="th_month">歸屬發薪月</th>
+                    <th class="desktop-only" data-i18n="th_category">類別</th>
+                    <th class="desktop-only" data-i18n="th_subtype">細項類型</th>
+                    <th class="desktop-only" data-i18n="th_hours">時數</th>
+                    
+                    <th class="mobile-only" data-i18n="th_mobile_date">日期</th>
+                    <th class="mobile-only" data-i18n="th_mobile_detail">明細</th>
+                    
+                    <th data-i18n="th_amount">影響金額</th>
+                    <th data-i18n="th_action">操作</th>
+                </tr>
+            </thead>
+            <tbody id="recordTableBody"></tbody>
+        </table>
     </div>
     
     <div class="cloud-section">
@@ -575,7 +577,7 @@
             'sec3_title': '3. 系統加班費倍率設定', 'wd1': '工作日(前2hr)', 'wd2': '工作日(後2hr)', 'rst1': '休假日(前2hr)', 'rst2': '休假日(3-8hr)', 'rst3': '休假日(9-12hr)', 'hol': '例/國/颱假日倍率',
             'sec4_title': '4. 每日加班 / 請假申報', 'type_ot': '➕ 加班', 'type_leave': '➖ 請假', 'date': '日期 (出勤日)', 'type': '類型', 'hours': '時數', 'ext_ot_hours': '加班時數', 'leave_hours': '請假時數', 'typhoon_ot_hours': '颱風加班時數', 'normal_ot_hours': '平日加班時數', 'is_night_shift': '🌙 夜班', 'btn_add_record': '⬇️ 新增 / 更新此筆紀錄',
             'dash_base': '當月核定總底薪 (A)', 'dash_ot': '應發加班費 (B)', 'dash_leave': '請假扣薪 (C)', 'dash_deduct': '固定扣款 (D)', 'dash_final_off': '本月實領預估 (A+B-C-D)', 'dash_final_on': '本月實領預估 (A+B-C-D+E)', 'dash_night_allow_prefix': '夜班出勤津貼 (E) - 出勤', 'dash_night_allow_suffix': '天',
-            'table_title': '當月出勤異動明細', 'cal_edit_mode': '✏️ 開啟調休編輯模式', 'shift_label': '輪班班別設定',
+            'table_title': '當月出勤異動明細', 'cal_title': '📅 當月出勤月曆', 'cal_edit_mode': '✏️ 開啟調休編輯模式', 'shift_label': '輪班班別設定',
             'th_date': '出勤日期', 'th_month': '歸屬發薪月', 'th_category': '類別', 'th_subtype': '細項類型', 'th_hours': '時數', 'th_mobile_date': '日期', 'th_mobile_detail': '明細', 'th_amount': '影響金額', 'th_action': '操作',
             'cloud_title': '☁️ 跨裝置/雲端同步', 'cloud_desc': '在電腦建立好的資料，請點「匯出備份」。到手機開啟此網頁時，點「匯入備份」就能無縫接軌！',
             'btn_export': '📤 匯出備份檔 (.json)', 'btn_import': '📥 匯入雲端備份', 'btn_clear': '🗑️ 清除當前設備的所有紀錄 (恢復原廠狀態)',
@@ -599,7 +601,7 @@
             'sec3_title': '3. Cài đặt hệ số làm thêm', 'wd1': 'Ngày thường (2 giờ đầu)', 'wd2': 'Ngày thường (Sau 2 giờ)', 'rst1': 'Ngày nghỉ (2 giờ đầu)', 'rst2': 'Ngày nghỉ (3-8 giờ)', 'rst3': 'Ngày nghỉ (9-12 giờ)', 'hol': 'Hệ số Lễ/Quốc khánh/Bão',
             'sec4_title': '4. Báo cáo Tăng ca / Nghỉ phép', 'type_ot': '➕ Tăng ca', 'type_leave': '➖ Nghỉ phép', 'date': 'Ngày', 'type': 'Loại', 'hours': 'Số giờ', 'ext_ot_hours': 'Số giờ tăng ca', 'leave_hours': 'Giờ nghỉ phép', 'typhoon_ot_hours': 'Giờ TC bão', 'normal_ot_hours': 'Giờ TC thường', 'is_night_shift': '🌙 Ca đêm', 'btn_add_record': '⬇️ Thêm / Cập nhật bản ghi',
             'dash_base': 'Tổng lương cơ bản (A)', 'dash_ot': 'Tiền tăng ca (B)', 'dash_leave': 'Khấu trừ nghỉ phép (C)', 'dash_deduct': 'Khấu trừ cố định (D)', 'dash_final_off': 'Thực lãnh dự kiến (A+B-C-D)', 'dash_final_on': 'Thực lãnh dự kiến (A+B+E-C-D)', 'dash_night_allow_prefix': 'PC ca đêm (E) -', 'dash_night_allow_suffix': 'ngày',
-            'table_title': 'Chi tiết chuyên cần tháng này', 'cal_edit_mode': '✏️ Chế độ chỉnh sửa lịch', 'shift_label': 'Cài đặt ca làm việc',
+            'table_title': 'Chi tiết chuyên cần tháng này', 'cal_title': '📅 Lịch chuyên cần tháng này', 'cal_edit_mode': '✏️ Chế độ chỉnh sửa lịch', 'shift_label': 'Cài đặt ca làm việc',
             'th_date': 'Ngày', 'th_month': 'Tháng nhận lương', 'th_category': 'Hạng mục', 'th_subtype': 'Loại chi tiết', 'th_hours': 'Số giờ', 'th_mobile_date': 'Ngày', 'th_mobile_detail': 'Chi tiết', 'th_amount': 'Số tiền ảnh hưởng', 'th_action': 'Thao tác',
             'cloud_title': '☁️ Đồng bộ đám mây/Thiết bị', 'cloud_desc': 'Dữ liệu tạo trên máy tính, vui lòng nhấp "Xuất bản sao lưu". Khi mở trên điện thoại, hãy nhấp "Nhập sao lưu đám mây" để đồng bộ liền mạch!',
             'btn_export': '📤 Xuất bản sao lưu (.json)', 'btn_import': '📥 Nhập sao lưu đám mây', 'btn_clear': '🗑️ Xóa tất cả bản ghi thiết bị này (Mặc định)',
