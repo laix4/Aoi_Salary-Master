@@ -518,27 +518,32 @@
         </div>
     </div>
 
-    <!-- 獨立出來的：明細表 (保留在下方) -->
-    <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; margin-bottom: 25px;">
-        <h3 id="tableTitleText" style="margin-top: 0; margin-bottom: 15px; min-width: max-content;" data-i18n="table_title">📅 當月出勤異動明細</h3>
-        <table>
-            <thead>
-                <tr id="tableHeaderRow">
-                    <th class="desktop-only" data-i18n="th_date">出勤日期</th>
-                    <th class="desktop-only" data-i18n="th_month">歸屬發薪月</th>
-                    <th class="desktop-only" data-i18n="th_category">類別</th>
-                    <th class="desktop-only" data-i18n="th_subtype">細項類型</th>
-                    <th class="desktop-only" data-i18n="th_hours">時數</th>
-                    
-                    <th class="mobile-only" data-i18n="th_mobile_date">日期</th>
-                    <th class="mobile-only" data-i18n="th_mobile_detail">明細</th>
-                    
-                    <th data-i18n="th_amount">影響金額</th>
-                    <th data-i18n="th_action">操作</th>
-                </tr>
-            </thead>
-            <tbody id="recordTableBody"></tbody>
-        </table>
+    <!-- 獨立出來的：明細表 加入收折功能 -->
+    <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 25px;">
+        <div class="collapsible-header" onclick="toggleSection('sec-table-content', 'sec-table-icon')">
+            <h3 id="tableTitleText" style="margin: 0; min-width: max-content;" data-i18n="table_title">📅 當月出勤異動明細</h3>
+            <span id="sec-table-icon" class="toggle-icon">▼</span>
+        </div>
+        <div id="sec-table-content" class="collapsible-content" style="overflow-x: auto;">
+            <table style="min-width: 600px;">
+                <thead>
+                    <tr id="tableHeaderRow">
+                        <th class="desktop-only" data-i18n="th_date">出勤日期</th>
+                        <th class="desktop-only" data-i18n="th_month">歸屬發薪月</th>
+                        <th class="desktop-only" data-i18n="th_category">類別</th>
+                        <th class="desktop-only" data-i18n="th_subtype">細項類型</th>
+                        <th class="desktop-only" data-i18n="th_hours">時數</th>
+                        
+                        <th class="mobile-only" data-i18n="th_mobile_date">日期</th>
+                        <th class="mobile-only" data-i18n="th_mobile_detail">明細</th>
+                        
+                        <th data-i18n="th_amount">影響金額</th>
+                        <th data-i18n="th_action">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="recordTableBody"></tbody>
+            </table>
+        </div>
     </div>
     
     <div class="cloud-section">
