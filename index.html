@@ -235,9 +235,11 @@
         #dailyInputGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; transition: all 0.3s ease; }
         #dailyInputGrid.split-mode { grid-template-columns: repeat(2, 1fr); }
 
-        table { width: 100%; border-collapse: collapse; font-size: 16px; }
-        th, td { padding: 14px 10px; text-align: center; border-bottom: 1px solid var(--border-color); transition: all 0.3s ease; }
-        th { background-color: rgba(94, 72, 132, 0.05); color: var(--dashboard-bg); font-weight: bold; font-size: 16px;}
+        /* 明細表格樣式 */
+        .record-table { width: 100%; border-collapse: collapse; font-size: 16px; }
+        .record-table th, .record-table td { padding: 14px 10px; text-align: center; border-bottom: 1px solid var(--border-color); transition: all 0.3s ease; }
+        .record-table th { background-color: rgba(94, 72, 132, 0.05); color: var(--dashboard-bg); font-weight: bold; font-size: 16px;}
+        
         .badge-ot { background-color: var(--primary-light); color: var(--primary-color); padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 14px;}
         .badge-leave { background-color: #ffebee; color: var(--danger-color); padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 14px;}
         .mobile-only { display: none; }
@@ -260,6 +262,11 @@
             border-color: var(--primary-color) !important; 
             box-shadow: 0 0 0 3px var(--primary-light); 
         }
+        
+        /* 動態欄位字體顏色控制 */
+        .date-col { color: var(--primary-color); font-weight: bold; }
+        .detail-col { color: #444; }
+        .amount-col { font-weight: bold; }
 
         .disclaimer-box { margin-top: 25px; font-size: 13px; color: #7f8c8d; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee; line-height: 1.6;}
         .disclaimer-box strong { color: #e74c3c; font-size: 14px;}
@@ -314,17 +321,15 @@
             .dt-badge { font-size: 10px; padding: 1px 3px;}
             .calendar-record { font-size: 12px; padding: 2px 0;}
 
+            /* 手機版明細表格排版優化 */
             .desktop-only { display: none !important; }
             .mobile-only { display: table-cell !important; }
-            table { font-size: 16px; }
-            th, td { padding: 14px 4px; }
-            .btn-small-del { padding: 8px 12px; font-size: 14px; }
-            
-            .inline-hour-edit {
-                width: 65px;
-                padding: 6px;
-                font-size: 15px;
-            }
+            .record-table { font-size: 14px; }
+            .record-table th, .record-table td { padding: 10px 4px; }
+            .btn-small-del { padding: 6px 10px; font-size: 13px; }
+            .inline-hour-edit { width: 55px; padding: 4px; font-size: 14px; }
+            .mobile-input-wrapper { display:inline-flex; align-items:center; gap:4px; font-size:14px; }
+            .mobile-input-wrapper span { min-width: 22px; text-align: right; }
         }
     </style>
 </head>
@@ -524,25 +529,28 @@
             <h3 id="tableTitleText" style="margin: 0; min-width: max-content;" data-i18n="table_title">📅 當月出勤異動明細</h3>
             <span id="sec-table-icon" class="toggle-icon">▼</span>
         </div>
-        <div id="sec-table-content" class="collapsible-content" style="overflow-x: auto;">
-            <table style="min-width: 600px;">
-                <thead>
-                    <tr id="tableHeaderRow">
-                        <th class="desktop-only" data-i18n="th_date">出勤日期</th>
-                        <th class="desktop-only" data-i18n="th_month">歸屬發薪月</th>
-                        <th class="desktop-only" data-i18n="th_category">類別</th>
-                        <th class="desktop-only" data-i18n="th_subtype">細項類型</th>
-                        <th class="desktop-only" data-i18n="th_hours">時數</th>
-                        
-                        <th class="mobile-only" data-i18n="th_mobile_date">日期</th>
-                        <th class="mobile-only" data-i18n="th_mobile_detail">明細</th>
-                        
-                        <th data-i18n="th_amount">影響金額</th>
-                        <th data-i18n="th_action">操作</th>
-                    </tr>
-                </thead>
-                <tbody id="recordTableBody"></tbody>
-            </table>
+        <!-- 確保 overflow-x 只限制在表格區塊，不影響標題 -->
+        <div id="sec-table-content" class="collapsible-content">
+            <div style="overflow-x: auto;">
+                <table class="record-table">
+                    <thead>
+                        <tr id="tableHeaderRow">
+                            <th class="desktop-only" data-i18n="th_date">出勤日期</th>
+                            <th class="desktop-only" data-i18n="th_month">歸屬發薪月</th>
+                            <th class="desktop-only" data-i18n="th_category">類別</th>
+                            <th class="desktop-only" data-i18n="th_subtype">細項類型</th>
+                            <th class="desktop-only" data-i18n="th_hours">時數</th>
+                            
+                            <th class="mobile-only" data-i18n="th_mobile_date">日期</th>
+                            <th class="mobile-only" data-i18n="th_mobile_detail">明細</th>
+                            
+                            <th data-i18n="th_amount">影響金額</th>
+                            <th data-i18n="th_action">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordTableBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
     
@@ -779,6 +787,7 @@
                     document.getElementById('rate_hol').value = data.settings.rate_hol || 2.0;
                 }
                 if (data.records) {
+                    // 自動健檢與修正舊資料的 salaryMonth
                     records = data.records.map(r => {
                         r.salaryMonth = getSalaryMonth(r.date);
                         return r;
@@ -848,6 +857,7 @@
             }
         }
         
+        // 防呆健檢
         if (conf.isNightShiftMode === undefined) conf.isNightShiftMode = false;
         if (conf.nightShiftAllowance === undefined) conf.nightShiftAllowance = 300;
         if (conf.shiftType === undefined) conf.shiftType = 'A';
@@ -1449,7 +1459,7 @@
                 const sign = r.mainType === "加班" ? "+" : "-";
                 
                 const desktopInput = `<input type="number" class="inline-hour-edit" value="${r.hours}" step="0.5" min="0" onchange="updateRecordHours(${r.id}, this.value)">`;
-                const mobileInput = `<div style="display:inline-flex; align-items:center; gap:6px; font-size:15px;"><span style="font-weight:bold; min-width:24px;">${abbrev}${sign}</span><input type="number" class="inline-hour-edit" value="${r.hours}" step="0.5" min="0" onchange="updateRecordHours(${r.id}, this.value)"></div>`;
+                const mobileInput = `<div class="mobile-input-wrapper"><span>${abbrev}${sign}</span><input type="number" class="inline-hour-edit" value="${r.hours}" step="0.5" min="0" onchange="updateRecordHours(${r.id}, this.value)"></div>`;
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -1458,9 +1468,9 @@
                     <td class="desktop-only">${badge}</td>
                     <td class="desktop-only">${displaySubType}</td>
                     <td class="desktop-only">${desktopInput} H</td>
-                    <td class="mobile-only" style="color: var(--primary-color); font-weight: bold; font-size: 16px;">${dateShort}</td>
-                    <td class="mobile-only" style="color: #444;">${mobileInput}</td>
-                    <td style="${color} font-weight:bold; font-size: 16px;">${amountTxt}</td>
+                    <td class="mobile-only date-col">${dateShort}</td>
+                    <td class="mobile-only detail-col">${mobileInput}</td>
+                    <td class="amount-col" style="${color}">${amountTxt}</td>
                     <td><button class="btn-small-del" onclick="deleteRecord(${r.id})">${t('del')}</button></td>
                 `;
                 tbody.appendChild(tr);
