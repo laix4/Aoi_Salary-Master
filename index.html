@@ -329,7 +329,7 @@
             .btn-small-del { padding: 6px 10px; font-size: 13px; }
             .inline-hour-edit { width: 55px; padding: 4px; font-size: 14px; }
             .mobile-input-wrapper { display:inline-flex; align-items:center; gap:4px; font-size:14px; }
-            .mobile-input-wrapper span { min-width: 22px; text-align: right; font-weight: bold; } /* 加入粗體 */
+            .mobile-input-wrapper span { min-width: 22px; text-align: right; font-weight: bold; }
         }
     </style>
 </head>
@@ -523,14 +523,14 @@
         </div>
     </div>
 
-    <!-- 獨立出來的：明細表 加入收折功能 -->
+    <!-- 獨立出來的：明細表 加入收折功能，預設收合 -->
     <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 25px;">
         <div class="collapsible-header" onclick="toggleSection('sec-table-content', 'sec-table-icon')">
             <h3 id="tableTitleText" style="margin: 0; min-width: max-content;" data-i18n="table_title">📅 當月出勤異動明細</h3>
-            <span id="sec-table-icon" class="toggle-icon">▼</span>
+            <span id="sec-table-icon" class="toggle-icon" style="transform: rotate(-90deg);">▼</span>
         </div>
         <!-- 確保 overflow-x 只限制在表格區塊，不影響標題 -->
-        <div id="sec-table-content" class="collapsible-content">
+        <div id="sec-table-content" class="collapsible-content" style="display: none;">
             <div style="overflow-x: auto;">
                 <table class="record-table">
                     <thead>
