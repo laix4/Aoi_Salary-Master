@@ -351,7 +351,10 @@
             .filter-box select { width: 100% !important; margin-left: 0 !important; }
             .top-quick-summary { align-items: center; padding: 15px; }
             
-            .period-range-box { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; }
+            /* 行動版動態週期防折行優化 */
+            .period-range-box { flex-direction: column; align-items: center; gap: 8px; padding: 12px 8px; }
+            .period-range-box > div { display: flex; align-items: center; flex-wrap: nowrap; font-size: 14px; white-space: nowrap; }
+            .inline-day-edit { width: 40px; padding: 2px; font-size: 14px; margin: 0; }
             
             .summary-dashboard { grid-template-columns: repeat(2, 1fr); padding: 20px 15px; }
             .summary-dashboard.has-night { grid-template-columns: repeat(2, 1fr); }
@@ -413,15 +416,15 @@
             </div>
         </div>
         
-        <!-- 動態計薪週期設定面板 (可直接點擊修改日期) -->
+        <!-- 動態計薪週期設定面板 (已移除日曆圖示，手機版置中不折行) -->
         <div class="period-range-box">
             <div>
-                <span data-i18n="period_prefix">📅 區間：</span>
+                <span data-i18n="period_prefix">區間：</span>
                 <span id="rangeStartYM"></span><input type="number" id="cycleStart" class="inline-day-edit" min="1" max="31" onchange="onConfigInputChange()"> 
                 <span data-i18n="period_to" style="margin: 0 5px;">至</span>
                 <span id="rangeEndYM"></span><input type="number" id="cycleEnd" class="inline-day-edit" min="1" max="31" onchange="onConfigInputChange()">
             </div>
-            <span class="edit-hint" data-i18n="period_edit_hint">✏️ (點擊日期即可修改計薪週期)</span>
+            <span class="edit-hint" data-i18n="period_edit_hint">(點擊日期即可修改計薪週期)</span>
         </div>
     </div>
 
@@ -643,7 +646,7 @@
             'sys_title': '💰 薪資與加班費結算系統', 'status_tag': '月份獨立 / 雲端同步', 'lang_btn': '🌐 Tiếng Việt',
             'select_month': '🔍 選擇要檢視與設定的月份：', 'top_quick': '當月預估實領：', 'top_ot_hours': '總加班時數：',
             'month_format': (y, m) => `${y} 年 ${m} 月份結算`, 
-            'period_prefix': '📅 區間：', 'period_to': ' 至 ', 'period_edit_hint': '✏️ (點擊日期即可修改計薪週期)',
+            'period_prefix': '區間：', 'period_to': ' 至 ', 'period_edit_hint': '(點擊日期即可修改計薪週期)',
             'sec1_title': '1. 該月薪資結構', 'sec1_desc': '若不修改，將自動沿用上個月的設定檔。',
             'base_salary': '本薪 (元)', 'night_allowance_label': '夜班出勤津貼 (元/天)', 'allowance_label': '該月各項津貼 (加總計算時薪)', 'add_allowance': '➕ 新增津貼項目', 'allowance_ph': '津貼名稱(如:全勤)',
             'total_base': '核定總底薪 (本薪+津貼)：', 'hourly_rate_day': '時薪 (總底薪/240)：', 'hourly_rate_night': '夜班時薪 (+夜班津貼/8)：',
@@ -655,7 +658,7 @@
             'th_date': '出勤日期', 'th_month': '歸屬發薪月', 'th_category': '類別', 'th_subtype': '細項類型', 'th_hours': '時數', 'th_mobile_date': '日期', 'th_mobile_detail': '明細', 'th_amount': '影響金額', 'th_action': '操作',
             'cloud_title': '☁️ 跨裝置/雲端同步', 'cloud_desc': '在電腦建立好的資料，請點「匯出備份」。到手機開啟此網頁時，點「匯入備份」就能無縫接軌！',
             'btn_export': '📤 匯出備份檔 (.json)', 'btn_import': '📥 匯入雲端備份', 'btn_clear': '🗑️ 清除當前設備的所有紀錄 (恢復原廠狀態)',
-            'disc_title': '⚠️ 免責聲明', 'disc_content': '本 APP所預估的薪資、加班費及相關金額僅供參考，實際薪資、津貼、獎金及各項給付內容，仍以公司實際核發金額及相關規定為準。',
+            'disc_title': '⚠️️ 免責聲明', 'disc_content': '本 APP所預估的薪資、加班費及相關金額僅供參考，實際薪資、津貼、獎金及各項給付內容，仍以公司實際核發金額及相關規定為準。',
             'del': '刪除', 'alert_no_data': '目前沒有資料可以匯出喔！', 'alert_sync_ok': '✅ 資料同步成功！網頁將自動重新整理。', 'alert_format_err': '❌ 檔案格式不正確。', 'alert_read_err': '❌ 讀取檔案失敗。', 'alert_clear': '⚠️ 確定要清除所有記憶並恢復預設值嗎？', 'alert_fill': '請填寫完整的日期與大於 0 的時數！', 'alert_unit_err': '事假申報最小單位為 0.5 小時！',
             'sub_wd': '工作日', 'sub_rst': '休假日', 'sub_reg': '例假日', 'sub_hol': '國定假日', 'sub_typhoon': '颱風假',
             'sub_pl': '事假', 'sub_sl': '病假', 'sub_ml': '生理假', 'sub_al': '特休', 'sub_annual': '年假',
@@ -668,13 +671,13 @@
             'sys_title': '💰 Tính Lương & Làm Thêm Giờ', 'status_tag': 'Tháng Độc Lập / Đồng Bộ', 'lang_btn': '🌐 中文版',
             'select_month': '🔍 Chọn tháng để xem & cài đặt:', 'top_quick': 'Thực lãnh dự kiến: ', 'top_ot_hours': 'Tổng giờ tăng ca: ',
             'month_format': (y, m) => `Kỳ lương tháng ${m}/${y}`, 
-            'period_prefix': '📅 Kỳ: ', 'period_to': ' đến ', 'period_edit_hint': '✏️ (Bấm vào ngày để sửa chu kỳ)',
+            'period_prefix': 'Kỳ: ', 'period_to': ' đến ', 'period_edit_hint': '(Bấm vào ngày để sửa chu kỳ)',
             'apply_to': (m) => `Áp dụng cho: kỳ ${m}`, 'sec1_title': '1. Cấu trúc lương tháng này', 'sec1_desc': 'Nếu không sửa đổi, sẽ tự động áp dụng cài đặt của tháng trước.',
             'base_salary': 'Lương cơ bản (VND)', 'night_allowance_label': 'Phụ cấp ca đêm (VND/ngày)', 'allowance_label': 'Phụ cấp tháng này (cộng vào để tính lương theo giờ)', 'add_allowance': '➕ Thêm phụ cấp', 'allowance_ph': 'Tên phụ cấp (vd: Chuyên cần)',
             'total_base': 'Tổng lương duyệt (Lương + Phụ cấp):', 'hourly_rate_day': 'Lương giờ (Tổng/240):', 'hourly_rate_night': 'Lương giờ ca đêm (+PC/8):',
             'sec2_title': '2. Các khoản khấu trừ cố định', 'add_deduction': '➕ Thêm khoản khấu trừ khác', 'deduction_ph': 'Tên khoản trừ',
             'sec3_title': '3. Cài đặt hệ số làm thêm', 'wd1': 'Ngày thường (2 giờ đầu)', 'wd2': 'Ngày thường (Sau 2 giờ)', 'rst1': 'Ngày nghỉ (2 giờ đầu)', 'rst2': 'Ngày nghỉ (3-8 giờ)', 'rst3': 'Ngày nghỉ (9-12 giờ)', 'hol': 'Hệ số Lễ/Quốc khánh/Bão',
-            'sec4_title': '4. Báo cáo Tăng ca / Nghỉ phép', 'type_ot': '➕ Tăng ca', 'type_leave': '➖ Nghỉ phép', 'date': 'Ngày', 'type': 'Loại', 'hours': 'Số giờ', 'ext_ot_hours': 'Số giờ tăng ca', 'leave_hours': 'Giờ nghỉ phép', 'typhoon_ot_hours': 'Giờ TC bão', 'normal_ot_hours': 'Giờ TC thường', 'is_night_shift': '🌙 Ca đêm', 'btn_add_record': '⬇️️ Thêm / Cập nhật bản ghi',
+            'sec4_title': '4. Báo cáo Tăng ca / Nghỉ phép', 'type_ot': '➕ Tăng ca', 'type_leave': '➖ Nghỉ phép', 'date': 'Ngày', 'type': 'Loại', 'hours': 'Số giờ', 'ext_ot_hours': 'Số giờ tăng ca', 'leave_hours': 'Giờ nghỉ phép', 'typhoon_ot_hours': 'Giờ TC bão', 'normal_ot_hours': 'Giờ TC thường', 'is_night_shift': '🌙 Ca đêm', 'btn_add_record': '⬇ Thêm / Cập nhật bản ghi',
             'dash_base': 'Tổng lương cơ bản (A)', 'dash_ot': 'Tiền tăng ca (B)', 'dash_leave': 'Khấu trừ nghỉ phép (C)', 'dash_deduct': 'Khấu trừ cố định (D)', 'dash_final_off': 'Thực lãnh dự kiến (A+B-C-D)', 'dash_final_on': 'Thực lãnh dự kiến (A+B+E-C-D)', 'dash_night_allow_prefix': 'PC ca đêm (E) -', 'dash_night_allow_suffix': 'ngày',
             'table_title': 'Chi tiết chuyên cần tháng này', 'cal_title': '📅 Lịch chuyên cần tháng này', 'cal_edit_mode': '✏️ Chế độ chỉnh sửa lịch', 'shift_label': 'Cài đặt ca làm việc',
             'th_date': 'Ngày', 'th_month': 'Tháng nhận lương', 'th_category': 'Hạng mục', 'th_subtype': 'Loại chi tiết', 'th_hours': 'Số giờ', 'th_mobile_date': 'Ngày', 'th_mobile_detail': 'Chi tiết', 'th_amount': 'Số tiền ảnh hưởng', 'th_action': 'Thao tác',
@@ -915,7 +918,7 @@
             }
         }
         
-        // 防呆健檢 - 新增 cycleStart 與 cycleEnd
+        // 防呆健檢
         if (conf.cycleStart === undefined) conf.cycleStart = 26;
         if (conf.cycleEnd === undefined) conf.cycleEnd = 25;
         if (conf.isNightShiftMode === undefined) conf.isNightShiftMode = false;
