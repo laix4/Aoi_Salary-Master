@@ -196,6 +196,51 @@
         .top-quick-summary strong { font-size: 22px; margin-left: 5px; }
         .top-quick-summary .sub-row strong { font-size: 18px; color: var(--danger-color);}
 
+        /* 動態週期設定面板 */
+        .period-range-box {
+            font-size: 15px; 
+            color: #666; 
+            margin-top: 15px; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            background: #fdfaf6; 
+            padding: 12px 15px; 
+            border-radius: 8px; 
+            border: 1px dashed #fce4ec;
+        }
+        .inline-day-edit {
+            width: 44px;
+            padding: 2px 4px;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            font-weight: bold;
+            color: var(--danger-color);
+            text-align: center;
+            background: #fff;
+            font-size: 15px;
+            font-family: monospace;
+            margin: 0 2px;
+            transition: all 0.2s;
+            -moz-appearance: textfield;
+        }
+        .inline-day-edit::-webkit-inner-spin-button, 
+        .inline-day-edit::-webkit-outer-spin-button { 
+            -webkit-appearance: none; margin: 0; 
+        }
+        .inline-day-edit:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-light);
+            background: #fff3e0;
+        }
+        .edit-hint {
+            font-size: 13px;
+            color: var(--accent);
+            margin-left: 8px;
+            font-weight: normal;
+        }
+
         .summary-row {
             display: flex; justify-content: space-between; align-items: center;
             padding-top: 12px; margin-top: 12px; border-top: 1px dashed rgba(94,72,132,0.3);
@@ -306,6 +351,8 @@
             .filter-box select { width: 100% !important; margin-left: 0 !important; }
             .top-quick-summary { align-items: center; padding: 15px; }
             
+            .period-range-box { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; }
+            
             .summary-dashboard { grid-template-columns: repeat(2, 1fr); padding: 20px 15px; }
             .summary-dashboard.has-night { grid-template-columns: repeat(2, 1fr); }
             .summary-dashboard.has-night #dashNightItem { grid-column: span 2; }
@@ -351,7 +398,7 @@
         </div>
     </div>
 
-    <!-- 月份選擇與速覽 -->
+    <!-- 月份選擇與區間設定面板 -->
     <div class="filter-box">
         <label style="font-weight:bold; color:var(--primary-color);" data-i18n="select_month">🔍 選擇要檢視與設定的月份：</label>
         <div class="filter-controls">
@@ -365,7 +412,17 @@
                 </div>
             </div>
         </div>
-        <div id="currentPeriodRange" style="font-size: 15px; color: #7f8c8d; margin-top: 12px; font-weight: bold;"></div>
+        
+        <!-- 動態計薪週期設定面板 (可直接點擊修改日期) -->
+        <div class="period-range-box">
+            <div>
+                <span data-i18n="period_prefix">📅 區間：</span>
+                <span id="rangeStartYM"></span><input type="number" id="cycleStart" class="inline-day-edit" min="1" max="31" onchange="onConfigInputChange()"> 
+                <span data-i18n="period_to" style="margin: 0 5px;">至</span>
+                <span id="rangeEndYM"></span><input type="number" id="cycleEnd" class="inline-day-edit" min="1" max="31" onchange="onConfigInputChange()">
+            </div>
+            <span class="edit-hint" data-i18n="period_edit_hint">✏️ (點擊日期即可修改計薪週期)</span>
+        </div>
     </div>
 
     <!-- 獨立出來的：全月圖 (月曆) -->
@@ -585,8 +642,9 @@
         'zh': {
             'sys_title': '💰 薪資與加班費結算系統', 'status_tag': '月份獨立 / 雲端同步', 'lang_btn': '🌐 Tiếng Việt',
             'select_month': '🔍 選擇要檢視與設定的月份：', 'top_quick': '當月預估實領：', 'top_ot_hours': '總加班時數：',
-            'month_format': (y, m) => `${y} 年 ${m} 月份結算`, 'period_range': (y1, m1, y2, m2) => `📅 區間：${y1}-${m1}-26 至 ${y2}-${m2}-25`,
-            'apply_to': (m) => `套用於：${m} 結算`, 'sec1_title': '1. 該月薪資結構', 'sec1_desc': '若不修改，將自動沿用上個月的設定檔。',
+            'month_format': (y, m) => `${y} 年 ${m} 月份結算`, 
+            'period_prefix': '📅 區間：', 'period_to': ' 至 ', 'period_edit_hint': '✏️ (點擊日期即可修改計薪週期)',
+            'sec1_title': '1. 該月薪資結構', 'sec1_desc': '若不修改，將自動沿用上個月的設定檔。',
             'base_salary': '本薪 (元)', 'night_allowance_label': '夜班出勤津貼 (元/天)', 'allowance_label': '該月各項津貼 (加總計算時薪)', 'add_allowance': '➕ 新增津貼項目', 'allowance_ph': '津貼名稱(如:全勤)',
             'total_base': '核定總底薪 (本薪+津貼)：', 'hourly_rate_day': '時薪 (總底薪/240)：', 'hourly_rate_night': '夜班時薪 (+夜班津貼/8)：',
             'sec2_title': '2. 該月固定扣除項目', 'add_deduction': '➕ 新增其他扣除項目', 'deduction_ph': '扣款名稱',
@@ -603,19 +661,20 @@
             'sub_pl': '事假', 'sub_sl': '病假', 'sub_ml': '生理假', 'sub_al': '特休', 'sub_annual': '年假',
             'def_d1': '勞保費', 'def_d2': '健保費', 'def_d3': '眷保費', 'def_d4': '餐費扣抵', 'badge_ot': '➕ 加班', 'badge_leave': '➖ 請假', 'unit_yuan': '元',
             'sun': '日', 'mon': '一', 'tue': '二', 'wed': '三', 'thu': '四', 'fri': '五', 'sat': '六',
-            'badge_rest': '休', 'badge_regular': '例', 'badge_national': '國', 'badge_typhoon': '颱', 'auto_detect': '系統自動判定', 'cal_separator': '加班結算截止日為當月25號',
+            'badge_rest': '休', 'badge_regular': '例', 'badge_national': '國', 'badge_typhoon': '颱', 'auto_detect': '系統自動判定',
             'shift_a': 'A班 (六休 日例)', 'shift_b': 'B班 (日休 一例)', 'shift_c': 'C班 (一休 二例)', 'shift_d': 'D班 (二休 三例)', 'shift_e': 'E班 (三休 四例)', 'shift_f': 'F班 (四休 五例)', 'shift_g': 'G班 (五休 六例)', 'shift_h': 'H班 (一休 日例)'
         },
         'vi': {
             'sys_title': '💰 Tính Lương & Làm Thêm Giờ', 'status_tag': 'Tháng Độc Lập / Đồng Bộ', 'lang_btn': '🌐 中文版',
             'select_month': '🔍 Chọn tháng để xem & cài đặt:', 'top_quick': 'Thực lãnh dự kiến: ', 'top_ot_hours': 'Tổng giờ tăng ca: ',
-            'month_format': (y, m) => `Kỳ lương tháng ${m}/${y}`, 'period_range': (y1, m1, y2, m2) => `📅 Kỳ: ${y1}-${m1}-26 đến ${y2}-${m2}-25`,
+            'month_format': (y, m) => `Kỳ lương tháng ${m}/${y}`, 
+            'period_prefix': '📅 Kỳ: ', 'period_to': ' đến ', 'period_edit_hint': '✏️ (Bấm vào ngày để sửa chu kỳ)',
             'apply_to': (m) => `Áp dụng cho: kỳ ${m}`, 'sec1_title': '1. Cấu trúc lương tháng này', 'sec1_desc': 'Nếu không sửa đổi, sẽ tự động áp dụng cài đặt của tháng trước.',
             'base_salary': 'Lương cơ bản (VND)', 'night_allowance_label': 'Phụ cấp ca đêm (VND/ngày)', 'allowance_label': 'Phụ cấp tháng này (cộng vào để tính lương theo giờ)', 'add_allowance': '➕ Thêm phụ cấp', 'allowance_ph': 'Tên phụ cấp (vd: Chuyên cần)',
             'total_base': 'Tổng lương duyệt (Lương + Phụ cấp):', 'hourly_rate_day': 'Lương giờ (Tổng/240):', 'hourly_rate_night': 'Lương giờ ca đêm (+PC/8):',
             'sec2_title': '2. Các khoản khấu trừ cố định', 'add_deduction': '➕ Thêm khoản khấu trừ khác', 'deduction_ph': 'Tên khoản trừ',
             'sec3_title': '3. Cài đặt hệ số làm thêm', 'wd1': 'Ngày thường (2 giờ đầu)', 'wd2': 'Ngày thường (Sau 2 giờ)', 'rst1': 'Ngày nghỉ (2 giờ đầu)', 'rst2': 'Ngày nghỉ (3-8 giờ)', 'rst3': 'Ngày nghỉ (9-12 giờ)', 'hol': 'Hệ số Lễ/Quốc khánh/Bão',
-            'sec4_title': '4. Báo cáo Tăng ca / Nghỉ phép', 'type_ot': '➕ Tăng ca', 'type_leave': '➖ Nghỉ phép', 'date': 'Ngày', 'type': 'Loại', 'hours': 'Số giờ', 'ext_ot_hours': 'Số giờ tăng ca', 'leave_hours': 'Giờ nghỉ phép', 'typhoon_ot_hours': 'Giờ TC bão', 'normal_ot_hours': 'Giờ TC thường', 'is_night_shift': '🌙 Ca đêm', 'btn_add_record': '⬇️ Thêm / Cập nhật bản ghi',
+            'sec4_title': '4. Báo cáo Tăng ca / Nghỉ phép', 'type_ot': '➕ Tăng ca', 'type_leave': '➖ Nghỉ phép', 'date': 'Ngày', 'type': 'Loại', 'hours': 'Số giờ', 'ext_ot_hours': 'Số giờ tăng ca', 'leave_hours': 'Giờ nghỉ phép', 'typhoon_ot_hours': 'Giờ TC bão', 'normal_ot_hours': 'Giờ TC thường', 'is_night_shift': '🌙 Ca đêm', 'btn_add_record': '⬇️️ Thêm / Cập nhật bản ghi',
             'dash_base': 'Tổng lương cơ bản (A)', 'dash_ot': 'Tiền tăng ca (B)', 'dash_leave': 'Khấu trừ nghỉ phép (C)', 'dash_deduct': 'Khấu trừ cố định (D)', 'dash_final_off': 'Thực lãnh dự kiến (A+B-C-D)', 'dash_final_on': 'Thực lãnh dự kiến (A+B+E-C-D)', 'dash_night_allow_prefix': 'PC ca đêm (E) -', 'dash_night_allow_suffix': 'ngày',
             'table_title': 'Chi tiết chuyên cần tháng này', 'cal_title': '📅 Lịch chuyên cần tháng này', 'cal_edit_mode': '✏️ Chế độ chỉnh sửa lịch', 'shift_label': 'Cài đặt ca làm việc',
             'th_date': 'Ngày', 'th_month': 'Tháng nhận lương', 'th_category': 'Hạng mục', 'th_subtype': 'Loại chi tiết', 'th_hours': 'Số giờ', 'th_mobile_date': 'Ngày', 'th_mobile_detail': 'Chi tiết', 'th_amount': 'Số tiền ảnh hưởng', 'th_action': 'Thao tác',
@@ -627,7 +686,7 @@
             'sub_pl': 'Việc riêng', 'sub_sl': 'Ốm', 'sub_ml': 'Sinh lý', 'sub_al': 'Phép năm', 'sub_annual': 'Nghỉ hàng năm',
             'def_d1': 'Bảo hiểm LĐ', 'def_d2': 'Bảo hiểm YT', 'def_d3': 'Bảo hiểm NPT', 'def_d4': 'Khấu trừ tiền ăn', 'badge_ot': '➕ Tăng ca', 'badge_leave': '➖ Phép', 'unit_yuan': 'VND',
             'sun': 'CN', 'mon': 'T2', 'tue': 'T3', 'wed': 'T4', 'thu': 'T5', 'fri': 'T6', 'sat': 'T7',
-            'badge_rest': 'N', 'badge_regular': 'L', 'badge_national': 'Q', 'badge_typhoon': 'Bão', 'auto_detect': 'Tự động', 'cal_separator': 'Chốt ca làm thêm ngày 25',
+            'badge_rest': 'N', 'badge_regular': 'L', 'badge_national': 'Q', 'badge_typhoon': 'Bão', 'auto_detect': 'Tự động',
             'shift_a': 'Ca A (T7 Nghỉ, CN Lễ)', 'shift_b': 'Ca B (CN Nghỉ, T2 Lễ)', 'shift_c': 'Ca C (T2 Nghỉ, T3 Lễ)', 'shift_d': 'Ca D (T3 Nghỉ, T4 Lễ)', 'shift_e': 'Ca E (T4 Nghỉ, T5 Lễ)', 'shift_f': 'Ca F (T5 Nghỉ, T6 Lễ)', 'shift_g': 'Ca G (T6 Nghỉ, T7 Lễ)', 'shift_h': 'Ca H (T2 Nghỉ, CN Lễ)'
         }
     };
@@ -787,7 +846,6 @@
                     document.getElementById('rate_hol').value = data.settings.rate_hol || 2.0;
                 }
                 if (data.records) {
-                    // 自動健檢與修正舊資料的 salaryMonth
                     records = data.records.map(r => {
                         r.salaryMonth = getSalaryMonth(r.date);
                         return r;
@@ -857,7 +915,9 @@
             }
         }
         
-        // 防呆健檢
+        // 防呆健檢 - 新增 cycleStart 與 cycleEnd
+        if (conf.cycleStart === undefined) conf.cycleStart = 26;
+        if (conf.cycleEnd === undefined) conf.cycleEnd = 25;
         if (conf.isNightShiftMode === undefined) conf.isNightShiftMode = false;
         if (conf.nightShiftAllowance === undefined) conf.nightShiftAllowance = 300;
         if (conf.shiftType === undefined) conf.shiftType = 'A';
@@ -870,8 +930,8 @@
         return conf;
     }
 
-    function resolveDayType(dateStr) {
-        const sMonth = getSalaryMonth(dateStr);
+    function resolveDayType(dateStr, targetMonth) {
+        const sMonth = targetMonth || getSalaryMonth(dateStr);
         const config = getConfigForMonth(sMonth);
         
         if (config.customDays && config.customDays[dateStr]) {
@@ -905,6 +965,8 @@
         const selectedMonth = document.getElementById('filterMonth').value;
         const config = getConfigForMonth(selectedMonth);
         
+        document.getElementById('cycleStart').value = config.cycleStart;
+        document.getElementById('cycleEnd').value = config.cycleEnd;
         document.getElementById('baseSalary').value = config.baseSalary;
         document.getElementById('monthNightMode').checked = config.isNightShiftMode;
         document.getElementById('nightShiftAllowance').value = config.nightShiftAllowance;
@@ -950,6 +1012,8 @@
 
     function onConfigInputChange() {
         const selectedMonth = document.getElementById('filterMonth').value;
+        const cycleStart = parseInt(document.getElementById('cycleStart').value) || 26;
+        const cycleEnd = parseInt(document.getElementById('cycleEnd').value) || 25;
         const baseSalary = document.getElementById('baseSalary').value;
         const isNightShiftMode = document.getElementById('monthNightMode').checked;
         const nightShiftAllowance = document.getElementById('nightShiftAllowance').value;
@@ -974,7 +1038,7 @@
         const currentConfig = monthlyConfigs[selectedMonth] || getConfigForMonth(selectedMonth);
         const customDays = currentConfig.customDays || {};
 
-        monthlyConfigs[selectedMonth] = { baseSalary, isNightShiftMode, nightShiftAllowance, shiftType, customDays, allowances, deductions };
+        monthlyConfigs[selectedMonth] = { cycleStart, cycleEnd, baseSalary, isNightShiftMode, nightShiftAllowance, shiftType, customDays, allowances, deductions };
         saveMemory();
         calculateBaseAndRate();
     }
@@ -1018,8 +1082,10 @@
         const hoursLabel = document.getElementById('hoursLabel');
         const grid = document.getElementById('dailyInputGrid');
         
+        const selectedMonth = document.getElementById('filterMonth').value;
+
         if (mainType === '加班' && dateStr) {
-            const dt = resolveDayType(dateStr);
+            const dt = resolveDayType(dateStr, selectedMonth);
             
             if (isNightMode && dt === 'typhoon') {
                 subTypeSelect.value = '颱風假';
@@ -1116,6 +1182,7 @@
         const inputHours = parseFloat(document.getElementById('recordHours').value) || 0;
         const isNightMode = document.getElementById('monthNightMode').checked;
         const splitWrapper = document.getElementById('splitHoursWrapper');
+        const selectedMonth = document.getElementById('filterMonth').value;
         
         if (!dateStr) { alert(t('alert_fill')); return; }
         
@@ -1123,26 +1190,25 @@
             if (inputHours <= 0) { alert(t('alert_fill')); return; }
             if (subType === "事假" && (inputHours % 0.5 !== 0)) { alert(t('alert_unit_err')); return; }
             
-            const sMonth = getSalaryMonth(dateStr);
-            records.push({ id: Date.now(), date: dateStr, salaryMonth: sMonth, mainType: '請假', subType: subType, hours: inputHours });
+            // 強制綁定在當前查看的月份
+            records.push({ id: Date.now(), date: dateStr, salaryMonth: selectedMonth, mainType: '請假', subType: subType, hours: inputHours });
         } else {
             if (inputHours < 0) { alert(t('alert_fill')); return; }
             
-            const sMonth = getSalaryMonth(dateStr);
             let nowId = Date.now();
-            const dt = resolveDayType(dateStr);
+            const dt = resolveDayType(dateStr, selectedMonth);
 
             if (isNightMode && dt === 'typhoon' && splitWrapper.style.display !== 'none') {
                 const splitHours = parseFloat(document.getElementById('splitRecordHours').value) || 0;
                 
                 if (inputHours > 0) {
-                    records.push({ id: nowId, date: dateStr, salaryMonth: sMonth, mainType: '加班', subType: '颱風假', hours: inputHours });
+                    records.push({ id: nowId, date: dateStr, salaryMonth: selectedMonth, mainType: '加班', subType: '颱風假', hours: inputHours });
                 }
                 if (splitHours > 0) {
                     let d2 = getNextDate(dateStr);
-                    let dt2 = resolveDayType(d2);
+                    let dt2 = resolveDayType(d2, selectedMonth);
                     let subType2 = mapDtToName(dt2);
-                    records.push({ id: nowId + 1, date: dateStr, salaryMonth: sMonth, mainType: '加班', subType: subType2, hours: splitHours });
+                    records.push({ id: nowId + 1, date: dateStr, salaryMonth: selectedMonth, mainType: '加班', subType: subType2, hours: splitHours });
                 }
                 if (inputHours === 0 && splitHours === 0) {
                     alert(t('alert_fill')); return;
@@ -1156,7 +1222,7 @@
                 }
                 
                 if (inputHours > 0) {
-                    records.push({ id: nowId, date: dateStr, salaryMonth: sMonth, mainType: '加班', subType: subType, hours: inputHours });
+                    records.push({ id: nowId, date: dateStr, salaryMonth: selectedMonth, mainType: '加班', subType: subType, hours: inputHours });
                 } else {
                     alert(t('alert_fill')); return;
                 }
@@ -1184,9 +1250,10 @@
         }
     };
 
-    function calculateSingleImpact(record) {
-        const { mainType, subType, hours, salaryMonth } = record;
-        const config = getConfigForMonth(salaryMonth);
+    function calculateSingleImpact(record, currentViewMonth) {
+        const { mainType, subType, hours } = record;
+        const sMonth = currentViewMonth || record.salaryMonth;
+        const config = getConfigForMonth(sMonth);
         const base = parseFloat(config.baseSalary) || 0;
         const isNightMode = config.isNightShiftMode || false;
         const nightAllowance = parseFloat(config.nightShiftAllowance) || 0;
@@ -1207,7 +1274,7 @@
 
             let effectiveSubType = subType;
             if (subType !== "颱風假") {
-                const dt = resolveDayType(record.date);
+                const dt = resolveDayType(record.date, sMonth);
                 if (dt === 'restday') effectiveSubType = '休假日';
                 else if (dt === 'regularHoliday') effectiveSubType = '例假日';
                 else if (dt === 'nationalHoliday') effectiveSubType = '國定假日';
@@ -1237,11 +1304,13 @@
         const isEditMode = document.getElementById('calEditMode').checked;
         if(!isEditMode) return;
         
-        const sMonth = getSalaryMonth(dateStr);
+        const selectedMonth = document.getElementById('filterMonth').value;
+        const sMonth = selectedMonth; 
+
         if (!monthlyConfigs[sMonth]) monthlyConfigs[sMonth] = getConfigForMonth(sMonth);
         if (!monthlyConfigs[sMonth].customDays) monthlyConfigs[sMonth].customDays = {};
         
-        const currentType = resolveDayType(dateStr);
+        const currentType = resolveDayType(dateStr, sMonth);
         let nextType = '';
         if (currentType === 'workday') nextType = 'restday';
         else if (currentType === 'restday') nextType = 'regularHoliday';
@@ -1273,21 +1342,9 @@
         onDateChange(); 
     }
 
-    function renderCalendar(selectedMonthStr, allRecords) {
-        const parts = selectedMonthStr.split('-');
-        let year = parseInt(parts[0]);
-        let month = parseInt(parts[1]);
-
-        let prevYear = year;
-        let prevMonth = month - 1;
-        if (prevMonth === 0) { prevMonth = 12; prevYear--; }
-
-        const startDate = new Date(prevYear, prevMonth - 1, 26);
-        const endDate = new Date(year, month, 0); 
-        const cycleEnd = new Date(year, month - 1, 25);
-
+    function renderCalendar(selectedMonthStr, filteredRecords, startD, endD) {
         const recordMap = {};
-        allRecords.forEach(r => {
+        filteredRecords.forEach(r => {
             if (!recordMap[r.date]) recordMap[r.date] = [];
             recordMap[r.date].push(r);
         });
@@ -1299,20 +1356,23 @@
             <div>${t('thu')}</div><div>${t('fri')}</div><div>${t('sat')}</div>
         </div><div class="calendar-grid">`;
 
-        const startDayOfWeek = startDate.getDay();
+        const visualStartDate = new Date(startD);
+        const visualEndDate = new Date(endD.getFullYear(), endD.getMonth() + 1, 0); 
+
+        const startDayOfWeek = visualStartDate.getDay();
         for (let i = 0; i < startDayOfWeek; i++) {
             html += `<div class="calendar-cell cal-out-of-range"></div>`;
         }
 
-        let currentDate = new Date(startDate);
-        while (currentDate <= endDate) {
+        let currentDate = new Date(visualStartDate);
+        while (currentDate <= visualEndDate) {
             const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}-${String(currentDate.getDate()).padStart(2,'0')}`;
             let displayDate = currentDate.getDate();
-            if (currentDate.getDate() === 1 || currentDate.getTime() === startDate.getTime()) {
+            if (currentDate.getDate() === 1 || currentDate.getTime() === visualStartDate.getTime()) {
                 displayDate = `${currentDate.getMonth()+1}/${currentDate.getDate()}`;
             }
 
-            const dt = resolveDayType(dateStr);
+            const dt = resolveDayType(dateStr, selectedMonthStr);
             let badgeHtml = '';
             if (dt === 'restday') badgeHtml = `<span class="dt-badge dt-rest">${t('badge_rest')}</span>`;
             else if (dt === 'regularHoliday') badgeHtml = `<span class="dt-badge dt-regular">${t('badge_regular')}</span>`;
@@ -1320,7 +1380,7 @@
             else if (dt === 'typhoon') badgeHtml = `<span class="dt-badge dt-typhoon">${t('badge_typhoon')}</span>`;
 
             let recordHtml = '';
-            let isNextCycle = currentDate > cycleEnd;
+            let isNextCycle = currentDate > endD;
 
             if (!isNextCycle && recordMap[dateStr]) {
                 recordMap[dateStr].forEach(r => {
@@ -1353,7 +1413,7 @@
             currentDate.setDate(currentDate.getDate() + 1);
         }
 
-        const endDayOfWeek = endDate.getDay();
+        const endDayOfWeek = visualEndDate.getDay();
         if (endDayOfWeek !== 6) {
             for (let i = endDayOfWeek + 1; i <= 6; i++) {
                 html += `<div class="calendar-cell cal-out-of-range"></div>`;
@@ -1375,35 +1435,55 @@
             const selectedMonth = document.getElementById('filterMonth').value;
             if (!selectedMonth) return;
 
+            const currentMonthConfig = getConfigForMonth(selectedMonth);
+            const isNightMode = currentMonthConfig.isNightShiftMode;
+            const nightAllowance = parseFloat(currentMonthConfig.nightShiftAllowance) || 0;
+            const cycleStart = parseInt(currentMonthConfig.cycleStart) || 26;
+            const cycleEnd = parseInt(currentMonthConfig.cycleEnd) || 25;
+
+            // Sync the inline UI elements
+            document.getElementById('cycleStart').value = cycleStart;
+            document.getElementById('cycleEnd').value = cycleEnd;
+
             const parts = selectedMonth.split('-');
             const pYear = parseInt(parts[0]);
             const pMonth = parseInt(parts[1]);
-            const prevYear = pMonth === 1 ? pYear - 1 : pYear;
-            const prevMonthStr = String(pMonth === 1 ? 12 : pMonth - 1).padStart(2, '0');
             
-            const rangeEl = document.getElementById('currentPeriodRange');
-            if(rangeEl) rangeEl.innerText = i18n[currentLang].period_range(prevYear, prevMonthStr, parts[0], parts[1]);
+            // 動態計算區間
+            let startMonthOffset = cycleStart > 15 ? -1 : 0;
+            let startD = new Date(pYear, pMonth - 1 + startMonthOffset, cycleStart);
+            
+            let endD = new Date(pYear, pMonth - 1, cycleEnd);
+            if (endD.getMonth() !== (pMonth - 1 + 12) % 12) {
+                endD = new Date(pYear, pMonth, 0); 
+            }
+            
+            // Update the period range label prefixes
+            const sy = startD.getFullYear();
+            const sm = String(startD.getMonth() + 1).padStart(2, '0');
+            const ey = endD.getFullYear();
+            const em = String(endD.getMonth() + 1).padStart(2, '0');
+            
+            document.getElementById('rangeStartYM').innerText = `${sy}-${sm}-`;
+            document.getElementById('rangeEndYM').innerText = `${ey}-${em}-`;
+
+            // 過濾區間內的打卡紀錄 (直接用 Date 範圍比對)
+            const filteredRecords = records.filter(r => {
+                let recD = new Date(r.date);
+                let cleanRecD = new Date(recD.getFullYear(), recD.getMonth(), recD.getDate());
+                return cleanRecD >= startD && cleanRecD <= endD;
+            });
+            filteredRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let totalOTPay = 0;
             let totalOTHours = 0;
             let totalLeaveDeduct = 0;
-
-            const currentMonthConfig = getConfigForMonth(selectedMonth);
-            const isNightMode = currentMonthConfig.isNightShiftMode;
-            const nightAllowance = parseFloat(currentMonthConfig.nightShiftAllowance) || 0;
-
             let attendanceCount = 0;
-            let startD = new Date(prevYear, (pMonth === 1 ? 12 : pMonth - 1) - 1, 26);
-            let endD = new Date(pYear, pMonth - 1, 25); 
-            
-            records.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            const filteredRecords = records.filter(r => r.salaryMonth === selectedMonth);
 
             let currD = new Date(startD);
             while(currD <= endD) {
                 let dStr = `${currD.getFullYear()}-${String(currD.getMonth()+1).padStart(2,'0')}-${String(currD.getDate()).padStart(2,'0')}`;
-                let dt = resolveDayType(dStr);
+                let dt = resolveDayType(dStr, selectedMonth);
                 let dRecs = filteredRecords.filter(r => r.date === dStr); 
                 
                 let isWorkday = (dt === 'workday');
@@ -1436,10 +1516,10 @@
                 thElements.forEach(th => { th.style.backgroundColor = "rgba(94, 72, 132, 0.05)"; th.style.color = "var(--dashboard-bg)"; });
             }
 
-            renderCalendar(selectedMonth, records);
+            renderCalendar(selectedMonth, filteredRecords, startD, endD);
 
             filteredRecords.forEach(r => {
-                const impact = calculateSingleImpact(r);
+                const impact = calculateSingleImpact(r, selectedMonth);
                 if (r.mainType === "加班") {
                     totalOTPay += impact;
                     totalOTHours += r.hours; 
