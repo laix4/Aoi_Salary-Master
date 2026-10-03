@@ -20,6 +20,15 @@
             --success-color: #2ecc71;
             --warning-color: rgb(255, 127, 80); /* 珊瑚橘 */
             --night-color: #9b59b6;
+            
+            /* 華人習慣：紅漲綠跌 */
+            --trend-up-bg: #ffebee;
+            --trend-up-text: #e74c3c;
+            --trend-up-border: #ffcdd2;
+            
+            --trend-down-bg: #eef7ed;
+            --trend-down-text: #27ae60;
+            --trend-down-border: #c8e6c9;
         }
         
         body {
@@ -168,34 +177,6 @@
         .toggle-switch-group label { display: flex; align-items: center; gap: 10px; cursor: pointer; margin: 0;}
         .toggle-switch-group input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--night-color); cursor: pointer;}
         
-        .cloud-section { margin-top: 30px; padding: 20px; background: rgba(94, 72, 132, 0.05); border-radius: 10px; border: 1px dashed var(--primary-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .btn-export { background: var(--primary-color); color: white; border: none; padding: 14px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.2s; }
-        .btn-export:hover { background: var(--primary-hover); }
-        .btn-import { background: #fff; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-block; transition: all 0.2s; }
-        .btn-import:hover { background: var(--primary-light); }
-
-        .filter-box { background: #fff; border: 1.5px solid var(--primary-color); padding: 20px; border-radius: 10px; margin-bottom: 25px; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(94, 72, 132, 0.1); width: 100%;}
-        .filter-box label { font-size: 18px !important; display: block;}
-        .filter-controls { display: flex; align-items: stretch; justify-content: space-between; gap: 15px; margin-top: 12px; flex-wrap: wrap;}
-        .filter-box select { 
-            font-size: 18px !important; padding: 12px 40px 12px 16px; width: auto; min-width: 240px; 
-            border: 1px solid var(--primary-color); border-radius: 8px; background-color: #f5f6fa; color: #333; font-weight: 500; cursor: pointer; transition: all 0.3s ease;
-            appearance: none; -webkit-appearance: none; -moz-appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e4884' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat; background-position: right 14px center; background-size: 18px;
-        }
-        .filter-box select:hover { background-color: #eef0f6; border-color: var(--primary-hover); }
-        .filter-box select:focus { background-color: #fff; box-shadow: 0 0 0 3px var(--primary-light); }
-        
-        .top-quick-summary { 
-            background: #eef7ed; color: #27ae60; padding: 10px 18px; border-radius: 8px; 
-            border: 1px solid #c8e6c9; white-space: nowrap; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px;
-        }
-        .top-quick-summary .main-row { font-size: 16px; font-weight: bold; display: flex; align-items: baseline; }
-        .top-quick-summary .sub-row { font-size: 15px; color: var(--danger-color); display: flex; align-items: baseline; font-weight: bold;}
-        .top-quick-summary strong { font-size: 22px; margin-left: 5px; }
-        .top-quick-summary .sub-row strong { font-size: 18px; color: var(--danger-color);}
-
         /* 動態週期設定面板 */
         .period-range-box {
             font-size: 15px; 
@@ -258,7 +239,7 @@
         .calendar-cell.edit-mode-on { cursor: pointer; border: 1.5px dashed var(--danger-color); }
         .calendar-cell.edit-mode-on:hover { background-color: #fff3e0; }
         
-        /* 非計算週期透明度 (30% 不透明 = 70% 透明)，只針對子元素不影響網格線 */
+        /* 非計算週期透明度 */
         .next-cycle-cell > * { opacity: 0.3; }
 
         .day-header-wrapper { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
@@ -276,7 +257,6 @@
         .cal-leave-special { background: #f2f4f4; color: #7f8c8d; }
         .cal-out-of-range { background: #fafafa; }
 
-        /* 智慧網格切換：3欄 -> 2x2欄 對稱設計 */
         #dailyInputGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; transition: all 0.3s ease; }
         #dailyInputGrid.split-mode { grid-template-columns: repeat(2, 1fr); }
 
@@ -289,29 +269,157 @@
         .badge-leave { background-color: #ffebee; color: var(--danger-color); padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 14px;}
         .mobile-only { display: none; }
         
-        /* 內聯編輯框樣式優化 (導圓角、淺灰邊框) */
         .inline-hour-edit { 
-            width: 80px;
-            padding: 8px 10px;
-            text-align: center; 
-            border: 1px solid #dcdfe6; 
-            border-radius: 8px; 
-            font-size: 16px;
-            background: #fff;
-            color: var(--text-color);
-            transition: all 0.2s; 
-            outline: none; 
-            font-family: inherit;
+            width: 80px; padding: 8px 10px; text-align: center; 
+            border: 1px solid #dcdfe6; border-radius: 8px; 
+            font-size: 16px; background: #fff; color: var(--text-color);
+            transition: all 0.2s; outline: none; font-family: inherit;
         }
-        .inline-hour-edit:focus { 
-            border-color: var(--primary-color) !important; 
-            box-shadow: 0 0 0 3px var(--primary-light); 
-        }
+        .inline-hour-edit:focus { border-color: var(--primary-color) !important; box-shadow: 0 0 0 3px var(--primary-light); }
         
-        /* 動態欄位字體顏色控制 */
         .date-col { color: var(--primary-color); font-weight: bold; }
         .detail-col { color: #444; }
         .amount-col { font-weight: bold; }
+
+        /* ================= 薪資趨勢圖表與雙指標卡片 (紅漲綠跌) ================= */
+        .trend-cards-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .trend-indicator-card {
+            background: #fafafa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px dashed var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .trend-indicator-title {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .trend-indicator-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .trend-indicator-sub {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 30px;
+            display: inline-block;
+            font-weight: bold;
+        }
+        
+        /* 華人習慣：紅漲綠跌 */
+        .trend-indicator-sub.up { background: var(--trend-up-bg); color: var(--trend-up-text); border: 1px solid var(--trend-up-border);}
+        .trend-indicator-sub.down { background: var(--trend-down-bg); color: var(--trend-down-text); border: 1px solid var(--trend-down-border);}
+        .trend-indicator-sub.flat { background: #fff; color: var(--text-muted); border: 1px solid var(--border-color);}
+        
+        .trend-indicator-ot {
+            margin-left: 8px;
+            padding-left: 8px;
+            border-left: 2px solid currentColor;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+        .chart-bars {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            border-bottom: 2px solid #eef0f6;
+            margin-bottom: 25px;
+            padding-bottom: 0;
+            gap: 8px;
+            position: relative;
+        }
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 45px;
+            height: 100%;
+            justify-content: flex-end;
+            cursor: pointer;
+            position: relative;
+        }
+        .bar {
+            width: 100%;
+            background-color: rgba(94, 72, 132, 0.2);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease, background-color 0.3s ease;
+            position: relative;
+            min-height: 4px;
+        }
+        .bar:hover, .bar.active { background-color: var(--primary-color); }
+        .bar-val {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--dashboard-bg);
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+        .bar:hover .bar-val, .bar.active .bar-val { opacity: 1; }
+        .chart-label {
+            position: absolute;
+            bottom: -25px; 
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 13px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .cloud-section { margin-top: 30px; padding: 20px; background: rgba(94, 72, 132, 0.05); border-radius: 10px; border: 1px dashed var(--primary-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .btn-export { background: var(--primary-color); color: white; border: none; padding: 14px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.2s; }
+        .btn-export:hover { background: var(--primary-hover); }
+        .btn-import { background: #fff; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-block; transition: all 0.2s; }
+        .btn-import:hover { background: var(--primary-light); }
+
+        .filter-box { background: #fff; border: 1.5px solid var(--primary-color); padding: 20px; border-radius: 10px; margin-bottom: 25px; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(94, 72, 132, 0.1); width: 100%;}
+        .filter-box label { font-size: 18px !important; display: block;}
+        .filter-controls { display: flex; align-items: stretch; justify-content: space-between; gap: 15px; margin-top: 12px; flex-wrap: wrap;}
+        .filter-box select { 
+            font-size: 18px !important; padding: 12px 40px 12px 16px; width: auto; min-width: 240px; 
+            border: 1px solid var(--primary-color); border-radius: 8px; background-color: #f5f6fa; color: #333; font-weight: 500; cursor: pointer; transition: all 0.3s ease;
+            appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e4884' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 14px center; background-size: 18px;
+        }
+        .filter-box select:hover { background-color: #eef0f6; border-color: var(--primary-hover); }
+        .filter-box select:focus { background-color: #fff; box-shadow: 0 0 0 3px var(--primary-light); }
+
+        /* 恢復右上角的指標樣式 */
+        .top-quick-summary { 
+            background: #eef7ed; color: #27ae60; padding: 10px 18px; border-radius: 8px; 
+            border: 1px solid #c8e6c9; white-space: nowrap; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px;
+        }
+        .top-quick-summary .main-row { font-size: 16px; font-weight: bold; display: flex; align-items: baseline; }
+        .top-quick-summary .sub-row { font-size: 15px; color: var(--danger-color); display: flex; align-items: baseline; font-weight: bold;}
+        .top-quick-summary strong { font-size: 22px; margin-left: 5px; }
+        .top-quick-summary .sub-row strong { font-size: 18px; color: var(--danger-color);}
 
         .disclaimer-box { margin-top: 25px; font-size: 13px; color: #7f8c8d; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee; line-height: 1.6;}
         .disclaimer-box strong { color: #e74c3c; font-size: 14px;}
@@ -341,7 +449,6 @@
             .form-group label { font-size: 16px; }
             .rate-grid label { font-size: 14px; }
             
-            /* 手機版打卡區塊防破版修正 - 改為 flex column 保證絕對不超出 */
             #dailyInputGrid { display: flex !important; flex-direction: column; gap: 12px; }
             #dailyInputGrid .form-group { width: 100%; margin-bottom: 0; }
             #dailyInputGrid .form-group input, #dailyInputGrid .form-group select { width: 100% !important; max-width: 100% !important; box-sizing: border-box; }
@@ -351,10 +458,13 @@
             .filter-box select { width: 100% !important; margin-left: 0 !important; }
             .top-quick-summary { align-items: center; padding: 15px; }
             
-            /* 行動版動態週期防折行優化 */
             .period-range-box { flex-direction: column; align-items: center; gap: 8px; padding: 12px 8px; }
             .period-range-box > div { display: flex; align-items: center; flex-wrap: nowrap; font-size: 14px; white-space: nowrap; }
             .inline-day-edit { width: 40px; padding: 2px; font-size: 14px; margin: 0; }
+            
+            /* 雙指標卡片手機版改為垂直排列 */
+            .trend-cards-container { grid-template-columns: 1fr; gap: 12px; }
+            .trend-indicator-card { padding: 15px; }
             
             .summary-dashboard { grid-template-columns: repeat(2, 1fr); padding: 20px 15px; }
             .summary-dashboard.has-night { grid-template-columns: repeat(2, 1fr); }
@@ -371,7 +481,6 @@
             .dt-badge { font-size: 10px; padding: 1px 3px;}
             .calendar-record { font-size: 12px; padding: 2px 0;}
 
-            /* 手機版明細表格排版優化 */
             .desktop-only { display: none !important; }
             .mobile-only { display: table-cell !important; }
             .record-table { font-size: 14px; }
@@ -416,7 +525,6 @@
             </div>
         </div>
         
-        <!-- 動態計薪週期設定面板 (已移除日曆圖示，手機版置中不折行) -->
         <div class="period-range-box">
             <div>
                 <span data-i18n="period_prefix">區間：</span>
@@ -425,6 +533,21 @@
                 <span id="rangeEndYM"></span><input type="number" id="cycleEnd" class="inline-day-edit" min="1" max="31" onchange="onConfigInputChange()">
             </div>
             <span class="edit-hint" data-i18n="period_edit_hint">(點擊日期即可修改計薪週期)</span>
+        </div>
+    </div>
+
+    <!-- 月度薪資趨勢圖表與雙指標卡片 -->
+    <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 25px;">
+        <h3 style="margin: 0 0 15px 0; color: var(--primary-color);" data-i18n="trend_title">📊 月度薪資趨勢分析</h3>
+        
+        <!-- 雙指標卡片區塊 -->
+        <div class="trend-cards-container" id="trendIndicatorCards">
+            <!-- 內容由 JS 動態生成 -->
+        </div>
+
+        <!-- 歷史趨勢長條圖 -->
+        <div class="chart-container">
+            <div class="chart-bars" id="chartBars"></div>
         </div>
     </div>
 
@@ -446,7 +569,7 @@
     <div class="main-layout">
         <!-- 左欄 -->
         <div class="left-col">
-            <!-- 預設隱藏 collapsible-content，圖示轉 -90deg -->
+            <!-- 預設隱藏 collapsible-content -->
             <div class="card" style="margin-bottom: 0;">
                 <div class="collapsible-header" onclick="toggleSection('sec1-content', 'sec1-icon')">
                     <h3 data-i18n="sec1_title">1. 該月薪資結構</h3>
@@ -549,13 +672,11 @@
                         <label><input type="radio" name="mainType" value="請假" onchange="toggleRecordType()"> <span data-i18n="type_leave">➖ 請假</span></label>
                     </div>
                 </div>
-                <!-- 網格容器：透過 class 切換 3欄 或 2x2欄 -->
                 <div id="dailyInputGrid">
                     <div class="form-group"><label data-i18n="date">日期 (出勤日)</label><input type="date" id="recordDate" onchange="onDateChange()"></div>
                     <div class="form-group"><label id="subTypeLabel" data-i18n="type">類型</label><select id="recordSubType" onchange="updateDefaultHours()"></select></div>
                     <div class="form-group"><label id="hoursLabel" data-i18n="ext_ot_hours">加班時數</label><input type="number" id="recordHours" value="0" step="0.5" min="0"></div>
                     
-                    <!-- 隱藏的平日加班輸入框 (夜班+颱風假專用) -->
                     <div class="form-group" id="splitHoursWrapper" style="display:none;"><label data-i18n="normal_ot_hours">平日加班時數</label><input type="number" id="splitRecordHours" value="2.5" step="0.5" min="0"></div>
                 </div>
 
@@ -564,14 +685,13 @@
         </div>
     </div>
 
-    <!-- 總結算儀表板 智慧排列 (4格或5格) -->
+    <!-- 總結算儀表板 -->
     <div class="summary-dashboard" id="summaryDashboard">
         <div class="dashboard-item"><div class="title" data-i18n="dash_base">當月核定總底薪 (A)</div><div class="value" id="dashBase">0</div></div>
         <div class="dashboard-item"><div class="title" data-i18n="dash_ot">應發加班費 (B)</div><div class="value val-plus" id="dashOT">+$ 0</div></div>
         <div class="dashboard-item"><div class="title" data-i18n="dash_leave">請假扣薪 (C)</div><div class="value val-minus" id="dashLeave">-$ 0</div></div>
         <div class="dashboard-item"><div class="title" data-i18n="dash_deduct">固定扣款 (D)</div><div class="value val-minus" id="dashDeduct">-$ 0</div></div>
         
-        <!-- 夜班出勤津貼 (E) -->
         <div class="dashboard-item" id="dashNightItem" style="display: none;">
             <div class="title" id="dashNightTitle">夜班出勤津貼 (E)</div>
             <div class="value val-plus" id="dashNightAllow">+$ 0</div>
@@ -583,13 +703,12 @@
         </div>
     </div>
 
-    <!-- 獨立出來的：明細表 加入收折功能，預設收合 -->
+    <!-- 獨立出來的：明細表 -->
     <div style="background: #fff; padding: 20px 15px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 25px;">
         <div class="collapsible-header" onclick="toggleSection('sec-table-content', 'sec-table-icon')">
             <h3 id="tableTitleText" style="margin: 0; min-width: max-content;" data-i18n="table_title">📅 當月出勤異動明細</h3>
             <span id="sec-table-icon" class="toggle-icon" style="transform: rotate(-90deg);">▼</span>
         </div>
-        <!-- 確保 overflow-x 只限制在表格區塊，不影響標題 -->
         <div id="sec-table-content" class="collapsible-content" style="display: none;">
             <div style="overflow-x: auto;">
                 <table class="record-table">
@@ -647,6 +766,8 @@
             'select_month': '🔍 選擇要檢視與設定的月份：', 'top_quick': '當月預估實領：', 'top_ot_hours': '總加班時數：',
             'month_format': (y, m) => `${y} 年 ${m} 月份結算`, 
             'period_prefix': '區間：', 'period_to': ' 至 ', 'period_edit_hint': '(點擊日期即可修改計薪週期)',
+            'trend_title': '📊 月度薪資趨勢分析', 'trend_no_data': '尚無上月資料可供比較', 'trend_up': '較上月增加', 'trend_down': '較上月減少', 'trend_flat': '與上月持平', 
+            'est_total_income_current': '當月預估總收入', 'est_total_income_latest': '最新已結算總收入', 'est_total_income_selected': '月已結算預估總收入',
             'sec1_title': '1. 該月薪資結構', 'sec1_desc': '若不修改，將自動沿用上個月的設定檔。',
             'base_salary': '本薪 (元)', 'night_allowance_label': '夜班出勤津貼 (元/天)', 'allowance_label': '該月各項津貼 (加總計算時薪)', 'add_allowance': '➕ 新增津貼項目', 'allowance_ph': '津貼名稱(如:全勤)',
             'total_base': '核定總底薪 (本薪+津貼)：', 'hourly_rate_day': '時薪 (總底薪/240)：', 'hourly_rate_night': '夜班時薪 (+夜班津貼/8)：',
@@ -658,7 +779,7 @@
             'th_date': '出勤日期', 'th_month': '歸屬發薪月', 'th_category': '類別', 'th_subtype': '細項類型', 'th_hours': '時數', 'th_mobile_date': '日期', 'th_mobile_detail': '明細', 'th_amount': '影響金額', 'th_action': '操作',
             'cloud_title': '☁️ 跨裝置/雲端同步', 'cloud_desc': '在電腦建立好的資料，請點「匯出備份」。到手機開啟此網頁時，點「匯入備份」就能無縫接軌！',
             'btn_export': '📤 匯出備份檔 (.json)', 'btn_import': '📥 匯入雲端備份', 'btn_clear': '🗑️ 清除當前設備的所有紀錄 (恢復原廠狀態)',
-            'disc_title': '⚠️️ 免責聲明', 'disc_content': '本 APP所預估的薪資、加班費及相關金額僅供參考，實際薪資、津貼、獎金及各項給付內容，仍以公司實際核發金額及相關規定為準。',
+            'disc_title': '⚠️ 免責聲明', 'disc_content': '本 APP所預估的薪資、加班費及相關金額僅供參考，實際薪資、津貼、獎金及各項給付內容，仍以公司實際核發金額及相關規定為準。',
             'del': '刪除', 'alert_no_data': '目前沒有資料可以匯出喔！', 'alert_sync_ok': '✅ 資料同步成功！網頁將自動重新整理。', 'alert_format_err': '❌ 檔案格式不正確。', 'alert_read_err': '❌ 讀取檔案失敗。', 'alert_clear': '⚠️ 確定要清除所有記憶並恢復預設值嗎？', 'alert_fill': '請填寫完整的日期與大於 0 的時數！', 'alert_unit_err': '事假申報最小單位為 0.5 小時！',
             'sub_wd': '工作日', 'sub_rst': '休假日', 'sub_reg': '例假日', 'sub_hol': '國定假日', 'sub_typhoon': '颱風假',
             'sub_pl': '事假', 'sub_sl': '病假', 'sub_ml': '生理假', 'sub_al': '特休', 'sub_annual': '年假',
@@ -672,14 +793,16 @@
             'select_month': '🔍 Chọn tháng để xem & cài đặt:', 'top_quick': 'Thực lãnh dự kiến: ', 'top_ot_hours': 'Tổng giờ tăng ca: ',
             'month_format': (y, m) => `Kỳ lương tháng ${m}/${y}`, 
             'period_prefix': 'Kỳ: ', 'period_to': ' đến ', 'period_edit_hint': '(Bấm vào ngày để sửa chu kỳ)',
+            'trend_title': '📊 Phân tích xu hướng lương', 'trend_no_data': 'Không có dữ liệu tháng trước để so sánh', 'trend_up': 'Tăng so với tháng trước', 'trend_down': 'Giảm so với tháng trước', 'trend_flat': 'Tương đương tháng trước', 
+            'est_total_income_current': 'Thu nhập ước tính tháng này', 'est_total_income_latest': 'Thu nhập đã chốt', 'est_total_income_selected': 'Thu nhập đã chốt',
             'apply_to': (m) => `Áp dụng cho: kỳ ${m}`, 'sec1_title': '1. Cấu trúc lương tháng này', 'sec1_desc': 'Nếu không sửa đổi, sẽ tự động áp dụng cài đặt của tháng trước.',
-            'base_salary': 'Lương cơ bản (VND)', 'night_allowance_label': 'Phụ cấp ca đêm (VND/ngày)', 'allowance_label': 'Phụ cấp tháng này (cộng vào để tính lương theo giờ)', 'add_allowance': '➕ Thêm phụ cấp', 'allowance_ph': 'Tên phụ cấp (vd: Chuyên cần)',
+            'base_salary': 'Lương cơ bản (VND)', 'night_allowance_label': 'Phụ cấp ca đêm (VND/ngày)', 'allowance_label': 'Phụ cấp tháng này (c cộng vào để tính lương theo giờ)', 'add_allowance': '➕ Thêm phụ cấp', 'allowance_ph': 'Tên phụ cấp (vd: Chuyên cần)',
             'total_base': 'Tổng lương duyệt (Lương + Phụ cấp):', 'hourly_rate_day': 'Lương giờ (Tổng/240):', 'hourly_rate_night': 'Lương giờ ca đêm (+PC/8):',
             'sec2_title': '2. Các khoản khấu trừ cố định', 'add_deduction': '➕ Thêm khoản khấu trừ khác', 'deduction_ph': 'Tên khoản trừ',
             'sec3_title': '3. Cài đặt hệ số làm thêm', 'wd1': 'Ngày thường (2 giờ đầu)', 'wd2': 'Ngày thường (Sau 2 giờ)', 'rst1': 'Ngày nghỉ (2 giờ đầu)', 'rst2': 'Ngày nghỉ (3-8 giờ)', 'rst3': 'Ngày nghỉ (9-12 giờ)', 'hol': 'Hệ số Lễ/Quốc khánh/Bão',
             'sec4_title': '4. Báo cáo Tăng ca / Nghỉ phép', 'type_ot': '➕ Tăng ca', 'type_leave': '➖ Nghỉ phép', 'date': 'Ngày', 'type': 'Loại', 'hours': 'Số giờ', 'ext_ot_hours': 'Số giờ tăng ca', 'leave_hours': 'Giờ nghỉ phép', 'typhoon_ot_hours': 'Giờ TC bão', 'normal_ot_hours': 'Giờ TC thường', 'is_night_shift': '🌙 Ca đêm', 'btn_add_record': '⬇ Thêm / Cập nhật bản ghi',
             'dash_base': 'Tổng lương cơ bản (A)', 'dash_ot': 'Tiền tăng ca (B)', 'dash_leave': 'Khấu trừ nghỉ phép (C)', 'dash_deduct': 'Khấu trừ cố định (D)', 'dash_final_off': 'Thực lãnh dự kiến (A+B-C-D)', 'dash_final_on': 'Thực lãnh dự kiến (A+B+E-C-D)', 'dash_night_allow_prefix': 'PC ca đêm (E) -', 'dash_night_allow_suffix': 'ngày',
-            'table_title': 'Chi tiết chuyên cần tháng này', 'cal_title': '📅 Lịch chuyên cần tháng này', 'cal_edit_mode': '✏️ Chế độ chỉnh sửa lịch', 'shift_label': 'Cài đặt ca làm việc',
+            'table_title': 'Chi tiết chuyên cần tháng này', 'cal_title': '📅 Lịch chuyên cần tháng này', 'cal_edit_mode': '✏ Chế độ chỉnh sửa lịch', 'shift_label': 'Cài đặt ca làm việc',
             'th_date': 'Ngày', 'th_month': 'Tháng nhận lương', 'th_category': 'Hạng mục', 'th_subtype': 'Loại chi tiết', 'th_hours': 'Số giờ', 'th_mobile_date': 'Ngày', 'th_mobile_detail': 'Chi tiết', 'th_amount': 'Số tiền ảnh hưởng', 'th_action': 'Thao tác',
             'cloud_title': '☁️ Đồng bộ đám mây/Thiết bị', 'cloud_desc': 'Dữ liệu tạo trên máy tính, vui lòng nhấp "Xuất bản sao lưu". Khi mở trên điện thoại, hãy nhấp "Nhập sao lưu đám mây" để đồng bộ liền mạch!',
             'btn_export': '📤 Xuất bản sao lưu (.json)', 'btn_import': '📥 Nhập sao lưu đám mây', 'btn_clear': '🗑️ Xóa tất cả bản ghi thiết bị này (Mặc định)',
@@ -903,6 +1026,18 @@
         return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
     }
 
+    function getPrevMonthStr(monthStr) {
+        let parts = monthStr.split('-');
+        let y = parseInt(parts[0]);
+        let m = parseInt(parts[1]);
+        m -= 1;
+        if (m === 0) {
+            m = 12;
+            y -= 1;
+        }
+        return `${y}-${String(m).padStart(2, '0')}`;
+    }
+
     function getConfigForMonth(targetMonth) {
         let conf;
         if (monthlyConfigs[targetMonth]) {
@@ -918,7 +1053,6 @@
             }
         }
         
-        // 防呆健檢
         if (conf.cycleStart === undefined) conf.cycleStart = 26;
         if (conf.cycleEnd === undefined) conf.cycleEnd = 25;
         if (conf.isNightShiftMode === undefined) conf.isNightShiftMode = false;
@@ -931,6 +1065,42 @@
             { name: '眷保費', amount: 0, isDefault: true }, { name: '餐費扣抵', amount: 0, isDefault: true }
         ];
         return conf;
+    }
+
+    function isMonthCompleted(monthStr) {
+        const config = getConfigForMonth(monthStr);
+        const cycleEnd = parseInt(config.cycleEnd) || 25;
+        const pYear = parseInt(monthStr.split('-')[0]);
+        const pMonth = parseInt(monthStr.split('-')[1]);
+        
+        let endD = new Date(pYear, pMonth - 1, cycleEnd);
+        if (endD.getMonth() !== (pMonth - 1 + 12) % 12) {
+            endD = new Date(pYear, pMonth, 0); 
+        }
+        endD.setHours(23, 59, 59, 999);
+        return new Date() > endD;
+    }
+
+    // 取得最新已經完成結算的月份
+    function getLatestCompletedMonthStr() {
+        const today = new Date();
+        const baseMonthStr = getSalaryMonth(today.toISOString().split('T')[0]);
+        let [y, m] = baseMonthStr.split('-').map(Number);
+        
+        if (isMonthCompleted(baseMonthStr)) {
+            return baseMonthStr;
+        }
+
+        for (let i = 1; i <= 6; i++) {
+            let d = new Date(y, m - 1 - i, 1);
+            let checkStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+            if (isMonthCompleted(checkStr)) {
+                return checkStr;
+            }
+        }
+        
+        let d = new Date(y, m - 2, 1);
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
     }
 
     function resolveDayType(dateStr, targetMonth) {
@@ -1048,6 +1218,189 @@
 
     function formatNumber(num) {
         return Number.isInteger(num) ? num : parseFloat(num.toFixed(3));
+    }
+    
+    // 獨立擷取特定月份的統計資訊 (總薪資、總加班時數)
+    function getMonthlyStats(monthStr) {
+        const config = getConfigForMonth(monthStr);
+        const cycleStart = parseInt(config.cycleStart) || 26;
+        const cycleEnd = parseInt(config.cycleEnd) || 25;
+        const pYear = parseInt(monthStr.split('-')[0]);
+        const pMonth = parseInt(monthStr.split('-')[1]);
+        
+        let startMonthOffset = cycleStart > 15 ? -1 : 0;
+        let startD = new Date(pYear, pMonth - 1 + startMonthOffset, cycleStart);
+        let endD = new Date(pYear, pMonth - 1, cycleEnd);
+        if (endD.getMonth() !== (pMonth - 1 + 12) % 12) {
+            endD = new Date(pYear, pMonth, 0); 
+        }
+
+        const filteredRecords = records.filter(r => {
+            let recD = new Date(r.date);
+            let cleanRecD = new Date(recD.getFullYear(), recD.getMonth(), recD.getDate());
+            return cleanRecD >= startD && cleanRecD <= endD;
+        });
+
+        let totalOTPay = 0;
+        let totalOTHours = 0;
+        let totalLeaveDeduct = 0;
+        let attendanceCount = 0;
+
+        let currD = new Date(startD);
+        while(currD <= endD) {
+            let dStr = `${currD.getFullYear()}-${String(currD.getMonth()+1).padStart(2,'0')}-${String(currD.getDate()).padStart(2,'0')}`;
+            let dt = resolveDayType(dStr, monthStr);
+            let dRecs = filteredRecords.filter(r => r.date === dStr); 
+            
+            let isWorkday = (dt === 'workday');
+            let hasOT = dRecs.some(r => r.mainType === '加班' && r.hours > 0);
+            let leaveHours = dRecs.filter(r => r.mainType === '請假').reduce((s, r) => s + r.hours, 0);
+            let isFullLeave = (leaveHours >= 8);
+
+            let attended = false;
+            if (isWorkday) {
+                if (!isFullLeave || hasOT) attended = true;
+            } else {
+                if (hasOT) attended = true;
+            }
+
+            if (attended) attendanceCount++;
+            currD.setDate(currD.getDate() + 1);
+        }
+
+        filteredRecords.forEach(r => {
+            const impact = calculateSingleImpact(r, monthStr);
+            if (r.mainType === "加班") {
+                totalOTPay += impact;
+                totalOTHours += r.hours;
+            } else {
+                totalLeaveDeduct += Math.abs(impact);
+            }
+        });
+
+        const base = parseFloat(config.baseSalary) || 0;
+        const totalAllowance = config.allowances.reduce((sum, a) => sum + (parseFloat(a.amount) || 0), 0);
+        const fixedDeductions = config.deductions.reduce((sum, d) => sum + (parseFloat(d.amount) || 0), 0);
+        const nightAllowanceTotal = config.isNightShiftMode ? attendanceCount * (parseFloat(config.nightShiftAllowance) || 0) : 0;
+        
+        let finalSalary = base + totalAllowance + totalOTPay + nightAllowanceTotal - totalLeaveDeduct - fixedDeductions;
+        return { salary: finalSalary, otHours: totalOTHours };
+    }
+
+    // 建立趨勢字串與顏色 Class
+    function buildTrendHTML(currentVal, prevVal, otHours) {
+        let diffStr = '';
+        let cardClass = 'flat';
+        
+        if (prevVal === null) {
+            diffStr = t('trend_no_data');
+        } else {
+            let diff = currentVal - prevVal;
+            if (diff > 0) {
+                let pct = prevVal === 0 ? '' : ` (+${((diff/prevVal)*100).toFixed(1)}%)`;
+                diffStr = `▲ ${t('trend_up')} NT$ ${diff}${pct}`;
+                cardClass = 'up'; 
+            } else if (diff < 0) {
+                let pct = prevVal === 0 ? '' : ` (${((diff/prevVal)*100).toFixed(1)}%)`;
+                diffStr = `▼ ${t('trend_down')} NT$ ${Math.abs(diff)}${pct}`;
+                cardClass = 'down'; 
+            } else {
+                diffStr = t('trend_flat');
+            }
+        }
+        
+        let otStr = otHours > 0 ? `<span class="trend-indicator-ot">${t('top_ot_hours')}${otHours} hrs</span>` : '';
+        return `<div class="trend-indicator-sub ${cardClass}">${diffStr} ${otStr}</div>`;
+    }
+
+    // 渲染薪資趨勢圖表與雙指標卡片 (邏輯分離、鎖定實際時間、精準連動)
+    function renderTrendChart(selectedMonth) {
+        
+        // --- 1. 卡片 1：本月預估 (永遠鎖定「真實現在時間」的當月，不隨點擊漂移) ---
+        const today = new Date();
+        const realCurrentMonthStr = getSalaryMonth(today.toISOString().split('T')[0]);
+        
+        let prevMonthStr1 = getPrevMonthStr(realCurrentMonthStr);
+        let prevHasData1 = monthlyConfigs[prevMonthStr1] !== undefined || records.some(r => r.salaryMonth === prevMonthStr1);
+        let prevSalary1 = prevHasData1 ? getMonthlyStats(prevMonthStr1).salary : null;
+        let statsCurrent = getMonthlyStats(realCurrentMonthStr);
+        let trendHTML1 = buildTrendHTML(statsCurrent.salary, prevSalary1, statsCurrent.otHours);
+        
+        // --- 2. 卡片 2：右側已結算 (顯示選定月份 或 最新已結算) ---
+        const latestCompleted = getLatestCompletedMonthStr();
+        // 如果使用者選的月份已經結算，就顯示該月份；如果選的是未來的月份，就顯示最新已結算的月份
+        let rightCardMonth = isMonthCompleted(selectedMonth) ? selectedMonth : latestCompleted;
+        
+        let statsRight = getMonthlyStats(rightCardMonth);
+        let prevMonthStr2 = getPrevMonthStr(rightCardMonth);
+        let prevHasData2 = monthlyConfigs[prevMonthStr2] !== undefined || records.some(r => r.salaryMonth === prevMonthStr2);
+        let prevSalary2 = prevHasData2 ? getMonthlyStats(prevMonthStr2).salary : null;
+        let trendHTML2 = buildTrendHTML(statsRight.salary, prevSalary2, statsRight.otHours);
+
+        // 標題動態組合 (左側永遠是當月，右側依照語系動態生成)
+        let leftTitle = t('est_total_income_current'); 
+        let rightTitle = currentLang === 'zh' 
+                         ? `${rightCardMonth.split('-')[1]}月${t('est_total_income_selected')}` 
+                         : `${t('est_total_income_selected')} (Tháng ${rightCardMonth.split('-')[1]})`;
+
+        document.getElementById('trendIndicatorCards').innerHTML = `
+            <div class="trend-indicator-card">
+                <div class="trend-indicator-title">${leftTitle}</div>
+                <div class="trend-indicator-value">NT$ ${statsCurrent.salary}</div>
+                <div>${trendHTML1}</div>
+            </div>
+            <div class="trend-indicator-card">
+                <div class="trend-indicator-title">${rightTitle}</div>
+                <div class="trend-indicator-value">NT$ ${statsRight.salary}</div>
+                <div>${trendHTML2}</div>
+            </div>
+        `;
+
+        // --- 3. 歷史長條圖 (永遠固定顯示 latestCompleted 往前推 6 個月) ---
+        let months = [];
+        let [y, m] = latestCompleted.split('-').map(Number);
+        
+        for(let i=5; i>=0; i--) {
+            let d = new Date(y, m - 1 - i, 1);
+            months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);
+        }
+        
+        let data = months.map(monthStr => {
+            let hasData = monthlyConfigs[monthStr] !== undefined || records.some(r => r.salaryMonth === monthStr);
+            return {
+                month: monthStr,
+                label: `${parseInt(monthStr.split('-')[1])}月`,
+                value: hasData ? getMonthlyStats(monthStr).salary : 0,
+                hasData: hasData
+            };
+        });
+        
+        let maxVal = Math.max(...data.map(d => d.value), 1000); 
+        
+        let barsHtml = '';
+        data.forEach(d => {
+            let h = d.hasData ? (d.value / maxVal) * 100 : 0;
+            // 圖表連動修復：只要是在圖表上點擊已結算的月份，或者是尚未結算的當月(預設亮起最新已結算)，就加上 active
+            let isActive = '';
+            if (isMonthCompleted(selectedMonth)) {
+                isActive = (d.month === selectedMonth) ? 'active' : '';
+            } else {
+                // 若選的是未結算的當月，讓圖表亮起最新已結算的柱子
+                isActive = (d.month === latestCompleted) ? 'active' : '';
+            }
+            let valDisplay = d.hasData ? `$${d.value}` : '-';
+            
+            barsHtml += `
+                <div class="bar-group" onclick="document.getElementById('filterMonth').value='${d.month}'; onMonthChange();">
+                    <div class="bar ${isActive}" style="height: ${h}%;">
+                        <div class="bar-val">${valDisplay}</div>
+                    </div>
+                    <div class="chart-label">${d.label}</div>
+                </div>
+            `;
+        });
+        
+        document.getElementById('chartBars').innerHTML = barsHtml;
     }
 
     function calculateBaseAndRate() {
@@ -1193,7 +1546,6 @@
             if (inputHours <= 0) { alert(t('alert_fill')); return; }
             if (subType === "事假" && (inputHours % 0.5 !== 0)) { alert(t('alert_unit_err')); return; }
             
-            // 強制綁定在當前查看的月份
             records.push({ id: Date.now(), date: dateStr, salaryMonth: selectedMonth, mainType: '請假', subType: subType, hours: inputHours });
         } else {
             if (inputHours < 0) { alert(t('alert_fill')); return; }
@@ -1444,7 +1796,6 @@
             const cycleStart = parseInt(currentMonthConfig.cycleStart) || 26;
             const cycleEnd = parseInt(currentMonthConfig.cycleEnd) || 25;
 
-            // Sync the inline UI elements
             document.getElementById('cycleStart').value = cycleStart;
             document.getElementById('cycleEnd').value = cycleEnd;
 
@@ -1452,7 +1803,6 @@
             const pYear = parseInt(parts[0]);
             const pMonth = parseInt(parts[1]);
             
-            // 動態計算區間
             let startMonthOffset = cycleStart > 15 ? -1 : 0;
             let startD = new Date(pYear, pMonth - 1 + startMonthOffset, cycleStart);
             
@@ -1461,7 +1811,6 @@
                 endD = new Date(pYear, pMonth, 0); 
             }
             
-            // Update the period range label prefixes
             const sy = startD.getFullYear();
             const sm = String(startD.getMonth() + 1).padStart(2, '0');
             const ey = endD.getFullYear();
@@ -1470,7 +1819,6 @@
             document.getElementById('rangeStartYM').innerText = `${sy}-${sm}-`;
             document.getElementById('rangeEndYM').innerText = `${ey}-${em}-`;
 
-            // 過濾區間內的打卡紀錄 (直接用 Date 範圍比對)
             const filteredRecords = records.filter(r => {
                 let recD = new Date(r.date);
                 let cleanRecD = new Date(recD.getFullYear(), recD.getMonth(), recD.getDate());
@@ -1588,6 +1936,9 @@
             }
             
             document.getElementById('dashFinal').innerText = `$ ${finalSalary}`;
+
+            renderTrendChart(selectedMonth);
+
         } catch(e) {
             console.error("UI Update Failed:", e);
         }
