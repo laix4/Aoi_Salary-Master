@@ -21,10 +21,10 @@
             --warning-color: rgb(255, 127, 80); /* 珊瑚橘 */
             --night-color: #9b59b6;
             
-            /* 華人習慣：紅漲綠跌 */
-            --trend-up-bg: #ffebee;
-            --trend-up-text: #e74c3c;
-            --trend-up-border: #ffcdd2;
+            /* 華人習慣：橘/紅漲綠跌 (配合主視覺珊瑚橘) */
+            --trend-up-bg: #fff0ea;
+            --trend-up-text: var(--accent, rgb(255, 127, 80));
+            --trend-up-border: rgba(255, 127, 80, 0.3);
             
             --trend-down-bg: #eef7ed;
             --trend-down-text: #27ae60;
@@ -281,7 +281,7 @@
         .detail-col { color: #444; }
         .amount-col { font-weight: bold; }
 
-        /* ================= 薪資趨勢圖表與雙指標卡片 (紅漲綠跌) ================= */
+        /* ================= 薪資趨勢圖表與雙指標卡片 ================= */
         .trend-cards-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -311,24 +311,29 @@
             margin-bottom: 12px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
+        
+        /* 雙行式指標標籤設計 */
         .trend-indicator-sub {
             font-size: 14px;
-            padding: 8px 12px;
-            border-radius: 30px;
-            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 12px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
             font-weight: bold;
         }
+        .trend-indicator-ot {
+            font-size: 14px; 
+            font-weight: bold; 
+            opacity: 0.9;
+        }
         
-        /* 華人習慣：紅漲綠跌 */
+        /* 華人習慣：橘漲綠跌 */
         .trend-indicator-sub.up { background: var(--trend-up-bg); color: var(--trend-up-text); border: 1px solid var(--trend-up-border);}
         .trend-indicator-sub.down { background: var(--trend-down-bg); color: var(--trend-down-text); border: 1px solid var(--trend-down-border);}
         .trend-indicator-sub.flat { background: #fff; color: var(--text-muted); border: 1px solid var(--border-color);}
-        
-        .trend-indicator-ot {
-            margin-left: 8px;
-            padding-left: 8px;
-            border-left: 2px solid currentColor;
-        }
         
         .chart-container {
             width: 100%;
@@ -400,7 +405,7 @@
 
         .filter-box { background: #fff; border: 1.5px solid var(--primary-color); padding: 20px; border-radius: 10px; margin-bottom: 25px; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(94, 72, 132, 0.1); width: 100%;}
         .filter-box label { font-size: 18px !important; display: block;}
-        .filter-controls { display: flex; align-items: stretch; justify-content: space-between; gap: 15px; margin-top: 12px; flex-wrap: wrap;}
+        .filter-controls { display: flex; align-items: stretch; justify-content: flex-start; gap: 15px; margin-top: 12px; flex-wrap: wrap;}
         .filter-box select { 
             font-size: 18px !important; padding: 12px 40px 12px 16px; width: auto; min-width: 240px; 
             border: 1px solid var(--primary-color); border-radius: 8px; background-color: #f5f6fa; color: #333; font-weight: 500; cursor: pointer; transition: all 0.3s ease;
@@ -410,16 +415,6 @@
         }
         .filter-box select:hover { background-color: #eef0f6; border-color: var(--primary-hover); }
         .filter-box select:focus { background-color: #fff; box-shadow: 0 0 0 3px var(--primary-light); }
-
-        /* 恢復右上角的指標樣式 */
-        .top-quick-summary { 
-            background: #eef7ed; color: #27ae60; padding: 10px 18px; border-radius: 8px; 
-            border: 1px solid #c8e6c9; white-space: nowrap; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px;
-        }
-        .top-quick-summary .main-row { font-size: 16px; font-weight: bold; display: flex; align-items: baseline; }
-        .top-quick-summary .sub-row { font-size: 15px; color: var(--danger-color); display: flex; align-items: baseline; font-weight: bold;}
-        .top-quick-summary strong { font-size: 22px; margin-left: 5px; }
-        .top-quick-summary .sub-row strong { font-size: 18px; color: var(--danger-color);}
 
         .disclaimer-box { margin-top: 25px; font-size: 13px; color: #7f8c8d; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee; line-height: 1.6;}
         .disclaimer-box strong { color: #e74c3c; font-size: 14px;}
@@ -456,7 +451,6 @@
             .filter-box { padding: 20px 15px; margin-bottom: 25px; }
             .filter-controls { flex-direction: column; align-items: stretch; gap: 15px; margin-top: 15px;}
             .filter-box select { width: 100% !important; margin-left: 0 !important; }
-            .top-quick-summary { align-items: center; padding: 15px; }
             
             .period-range-box { flex-direction: column; align-items: center; gap: 8px; padding: 12px 8px; }
             .period-range-box > div { display: flex; align-items: center; flex-wrap: nowrap; font-size: 14px; white-space: nowrap; }
@@ -515,14 +509,7 @@
         <label style="font-weight:bold; color:var(--primary-color);" data-i18n="select_month">🔍 選擇要檢視與設定的月份：</label>
         <div class="filter-controls">
             <select id="filterMonth" onchange="onMonthChange()"></select>
-            <div class="top-quick-summary">
-                <div class="main-row"><span data-i18n="top_quick">當月預估實領：</span><strong id="topQuickSummaryAmount">$ 0</strong></div>
-                <div class="sub-row">
-                    <span data-i18n="top_ot_hours">總加班時數：</span>
-                    <strong id="topQuickOTHours">0</strong>
-                    <span style="margin-left:4px; font-weight:bold; font-size:16px;">H</span>
-                </div>
-            </div>
+            <!-- 原本右側的 top-quick-summary 已移除 -->
         </div>
         
         <div class="period-range-box">
@@ -763,11 +750,11 @@
     const i18n = {
         'zh': {
             'sys_title': '💰 薪資與加班費結算系統', 'status_tag': '月份獨立 / 雲端同步', 'lang_btn': '🌐 Tiếng Việt',
-            'select_month': '🔍 選擇要檢視與設定的月份：', 'top_quick': '當月預估實領：', 'top_ot_hours': '總加班時數：',
+            'select_month': '🔍 選擇要檢視與設定的月份：',
             'month_format': (y, m) => `${y} 年 ${m} 月份結算`, 
             'period_prefix': '區間：', 'period_to': ' 至 ', 'period_edit_hint': '(點擊日期即可修改計薪週期)',
             'trend_title': '📊 月度薪資趨勢分析', 'trend_no_data': '尚無上月資料可供比較', 'trend_up': '較上月增加', 'trend_down': '較上月減少', 'trend_flat': '與上月持平', 
-            'est_total_income_current': '當月預估總收入', 'est_total_income_latest': '最新已結算總收入', 'est_total_income_selected': '月已結算預估總收入',
+            'est_total_income_current': '當月預估實領', 'est_total_income_selected': '薪資', 'top_ot_hours': '總加班時數：',
             'sec1_title': '1. 該月薪資結構', 'sec1_desc': '若不修改，將自動沿用上個月的設定檔。',
             'base_salary': '本薪 (元)', 'night_allowance_label': '夜班出勤津貼 (元/天)', 'allowance_label': '該月各項津貼 (加總計算時薪)', 'add_allowance': '➕ 新增津貼項目', 'allowance_ph': '津貼名稱(如:全勤)',
             'total_base': '核定總底薪 (本薪+津貼)：', 'hourly_rate_day': '時薪 (總底薪/240)：', 'hourly_rate_night': '夜班時薪 (+夜班津貼/8)：',
@@ -790,11 +777,11 @@
         },
         'vi': {
             'sys_title': '💰 Tính Lương & Làm Thêm Giờ', 'status_tag': 'Tháng Độc Lập / Đồng Bộ', 'lang_btn': '🌐 中文版',
-            'select_month': '🔍 Chọn tháng để xem & cài đặt:', 'top_quick': 'Thực lãnh dự kiến: ', 'top_ot_hours': 'Tổng giờ tăng ca: ',
+            'select_month': '🔍 Chọn tháng để xem & cài đặt:', 
             'month_format': (y, m) => `Kỳ lương tháng ${m}/${y}`, 
             'period_prefix': 'Kỳ: ', 'period_to': ' đến ', 'period_edit_hint': '(Bấm vào ngày để sửa chu kỳ)',
             'trend_title': '📊 Phân tích xu hướng lương', 'trend_no_data': 'Không có dữ liệu tháng trước để so sánh', 'trend_up': 'Tăng so với tháng trước', 'trend_down': 'Giảm so với tháng trước', 'trend_flat': 'Tương đương tháng trước', 
-            'est_total_income_current': 'Thu nhập ước tính tháng này', 'est_total_income_latest': 'Thu nhập đã chốt', 'est_total_income_selected': 'Thu nhập đã chốt',
+            'est_total_income_current': 'Thu nhập ước tính tháng này', 'est_total_income_selected': 'Thu nhập', 'top_ot_hours': 'Tổng giờ tăng ca: ',
             'apply_to': (m) => `Áp dụng cho: kỳ ${m}`, 'sec1_title': '1. Cấu trúc lương tháng này', 'sec1_desc': 'Nếu không sửa đổi, sẽ tự động áp dụng cài đặt của tháng trước.',
             'base_salary': 'Lương cơ bản (VND)', 'night_allowance_label': 'Phụ cấp ca đêm (VND/ngày)', 'allowance_label': 'Phụ cấp tháng này (c cộng vào để tính lương theo giờ)', 'add_allowance': '➕ Thêm phụ cấp', 'allowance_ph': 'Tên phụ cấp (vd: Chuyên cần)',
             'total_base': 'Tổng lương duyệt (Lương + Phụ cấp):', 'hourly_rate_day': 'Lương giờ (Tổng/240):', 'hourly_rate_night': 'Lương giờ ca đêm (+PC/8):',
@@ -1309,8 +1296,8 @@
             }
         }
         
-        let otStr = otHours > 0 ? `<span class="trend-indicator-ot">${t('top_ot_hours')}${otHours} hrs</span>` : '';
-        return `<div class="trend-indicator-sub ${cardClass}">${diffStr} ${otStr}</div>`;
+        let otStr = otHours > 0 ? `<div class="trend-indicator-ot">${t('top_ot_hours')}${otHours} hrs</div>` : '';
+        return `<div class="trend-indicator-sub ${cardClass}"><div>${diffStr}</div>${otStr}</div>`;
     }
 
     // 渲染薪資趨勢圖表與雙指標卡片 (邏輯分離、鎖定實際時間、精準連動)
@@ -1339,20 +1326,21 @@
 
         // 標題動態組合 (左側永遠是當月，右側依照語系動態生成)
         let leftTitle = t('est_total_income_current'); 
+        let rightMNum = parseInt(rightCardMonth.split('-')[1]);
         let rightTitle = currentLang === 'zh' 
-                         ? `${rightCardMonth.split('-')[1]}月${t('est_total_income_selected')}` 
-                         : `${t('est_total_income_selected')} (Tháng ${rightCardMonth.split('-')[1]})`;
+                         ? `${rightMNum}月${t('est_total_income_selected')}` 
+                         : `${t('est_total_income_selected')} (Tháng ${rightMNum})`;
 
         document.getElementById('trendIndicatorCards').innerHTML = `
             <div class="trend-indicator-card">
                 <div class="trend-indicator-title">${leftTitle}</div>
                 <div class="trend-indicator-value">NT$ ${statsCurrent.salary}</div>
-                <div>${trendHTML1}</div>
+                ${trendHTML1}
             </div>
             <div class="trend-indicator-card">
                 <div class="trend-indicator-title">${rightTitle}</div>
                 <div class="trend-indicator-value">NT$ ${statsRight.salary}</div>
-                <div>${trendHTML2}</div>
+                ${trendHTML2}
             </div>
         `;
 
@@ -1913,8 +1901,6 @@
             const monthTotalBase = base + totalAllowance;
             const finalSalary = monthTotalBase + totalOTPay + nightAllowanceTotal - totalLeaveDeduct - fixedDeductions;
 
-            document.getElementById('topQuickSummaryAmount').innerText = `$ ${finalSalary}`;
-            document.getElementById('topQuickOTHours').innerText = totalOTHours;
             document.getElementById('dashBase').innerText = `$ ${monthTotalBase}`;
             document.getElementById('dashOT').innerText = `+$ ${totalOTPay}`;
             document.getElementById('dashLeave').innerText = `-$ ${totalLeaveDeduct}`;
